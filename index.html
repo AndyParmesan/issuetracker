@@ -925,7 +925,7 @@ select.form-control option { background: #ffffff; color: #333333; }
 
     <!-- ===== NEW ISSUE VIEW ===== -->
     <div class="view" id="view-new-issue">
-      <div class="card" style="max-width:680px">
+  <div class="card" style="width: 100%; max-width: none;">
         <div class="card-header"><div class="card-title">Log New Issue</div></div>
         <div class="card-body">
           <form id="new-issue-form" onsubmit="submitNewIssue(event)" style="display:flex;flex-direction:column;gap:16px;">
@@ -1671,7 +1671,7 @@ async function generateReport() {
   };
 
   try {
-  const res = await apiFetch('/generate_report.php', { method: 'POST', body: JSON.stringify(dto) });
+  const res = await apiFetch('/create_report.php', { method: 'POST', body: JSON.stringify(dto) });
     const r   = res.data;
     currentReportId = r.id;
 
@@ -1707,13 +1707,21 @@ async function loadReportHistory() {
         <div class="report-history-item">
           <div class="rh-icon">📋</div>
           <div class="rh-info">
-            <div class="rh-title">${r.dateRange || 'Custom'} — ${r.statusFilter}</div>
-            <div class="rh-sub">${r.totalIssues} issues · ${fmtDateTime(r.generatedAt)}${r.generatedByName ? ` · by ${escHtml(r.generatedByName)}` : ''}</div>
+            <div class="rh-title">${r.date_range || r.dateRange || 'Custom'} — ${r.status_filter || r.statusFilter}</div>
+            <div class="rh-sub">
+              ${r.total_issues || r.totalIssues} issues · ${fmtDateTime(r.generated_at || r.generatedAt)}
+            </div>
           </div>
           <button class="btn btn-success btn-xs" onclick="downloadReportExcel(${r.id})">⬇ Excel</button>
         </div>`).join('')
-      : `<div class="empty-state"><div class="es-icon">📋</div><div class="es-title">No reports yet</div><div class="es-sub">Generate your first report above.</div></div>`;
-  } catch { }
+      : `<div class="empty-state">
+          <div class="es-icon">📋</div>
+          <div class="es-title">No reports yet</div>
+          <div class="es-sub">Generate your first report above.</div>
+        </div>`; // Fixed the missing colon here
+  } catch (e) {
+    console.error("Failed to load report history:", e);
+  }
 }
 
 function downloadReportExcel(id) {
