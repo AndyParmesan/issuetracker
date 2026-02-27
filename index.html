@@ -306,11 +306,13 @@ select.form-control option { background: #ffffff; color: #333333; }
 <!-- ===== SIDEBAR ===== -->
 <nav id="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-mark">
-      <img src="logo/castlestechlogo.png" alt="Castles Technology" style="width:36px;height:36px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">
-      <div>
-        <div class="logo-text">IssueTracker</div>
-        <div class="logo-sub">Castles Technology Enterprise v2.0</div>
+    <div class="logo-mark" style="flex-direction:column;align-items:center;gap:8px;padding:4px 0;">
+      <img src="logo/castlestechlogo.png" alt="Castles Technology"
+           style="width:54px;height:54px;object-fit:contain;flex-shrink:0;"
+           onerror="this.style.display='none'">
+      <div style="text-align:center;">
+        <div class="logo-text" style="font-size:17px;letter-spacing:0.02em;">IssueTracker</div>
+        <div class="logo-sub" style="margin-top:2px;">Castles Technology Enterprise v2.0</div>
       </div>
     </div>
   </div>
@@ -319,7 +321,8 @@ select.form-control option { background: #ffffff; color: #333333; }
     <a class="nav-item active" data-view="dashboard"><span class="icon">📊</span> Dashboard</a>
     <a class="nav-item" data-view="issues"><span class="icon">🔎</span> All Issues <span class="nav-badge" id="badge-open">–</span></a>
     <div class="nav-section-label">Management</div>
-    <a class="nav-item" data-view="new-issue"><span class="icon">➕</span> New Issue</a>
+    <a class="nav-item" data-view="new-issue"><span class="icon">🐛</span> New Issue</a>
+    <a class="nav-item" data-view="user-story"><span class="icon">📖</span> User Story</a>
     <a class="nav-item" data-view="import"><span class="icon">📥</span> Import CSV</a>
     <div class="nav-section-label">Analytics</div>
     <a class="nav-item" data-view="reports"><span class="icon">📋</span> Reports</a>
@@ -419,17 +422,10 @@ select.form-control option { background: #ffffff; color: #333333; }
     <!-- ===== NEW ISSUE ===== -->
     <div class="view" id="view-new-issue">
       <div class="card">
-        <div class="card-header"><div class="card-title">Log New Issue / User Story</div></div>
+        <div class="card-header"><div class="card-title">🐛 Log New Issue</div></div>
         <div class="card-body">
           <form id="new-issue-form" onsubmit="submitNewIssue(event)" style="display:flex;flex-direction:column;gap:16px;">
 
-            <!-- Header Section -->
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);font-family:'Roboto Mono',monospace;padding-bottom:4px;border-bottom:1px solid #eee;">Header Section</div>
-
-            <div class="form-group">
-              <label>Title <span style="color:#aaa;font-size:9px;">(Short description)</span></label>
-              <input type="text" id="ni-title" placeholder="e.g. Add inventory export feature" />
-            </div>
             <div class="form-row">
               <div class="form-group">
                 <label>Dashboard</label>
@@ -440,61 +436,21 @@ select.form-control option { background: #ffffff; color: #333333; }
                 <input type="text" id="ni-module" placeholder="e.g. Inventory" />
               </div>
             </div>
+
+            <div class="form-group">
+              <label>Description *</label>
+              <textarea id="ni-desc" placeholder="Describe the issue in detail…" rows="4" required></textarea>
+            </div>
+
             <div class="form-row">
               <div class="form-group">
                 <label>State</label>
                 <select class="form-control" id="ni-state">
-                  <option value="" disabled selected>-- Select State --</option>
-                  <optgroup label="User Story States">
-                    <option selected>Draft</option><option>For Review</option><option>Approved</option>
-                    <option>In Development</option><option>For Testing</option><option>QA Failed</option>
-                    <option>For UAT</option><option>Ready for Deployment</option><option>Deployed</option><option>Closed</option>
-                  </optgroup>
-                  <optgroup label="Legacy">
-                    <option>New</option><option>Bug</option><option>Open</option><option>In Progress</option><option>Resolved</option>
-                  </optgroup>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Assigned To</label>
-                <select class="form-control" id="ni-assigned-to">
-                  <option value="">— Unassigned —</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Area Path <span style="color:#aaa;font-size:9px;">(Team/Dept, optional)</span></label>
-                <input type="text" id="ni-area-path" placeholder="e.g. Backend Team" />
-              </div>
-              <div class="form-group">
-                <label>Iteration Path <span style="color:#aaa;font-size:9px;">(Sprint)</span></label>
-                <input type="text" id="ni-iteration-path" placeholder="e.g. Sprint 5" />
-              </div>
-            </div>
-
-            <!-- Main Section -->
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);font-family:'Roboto Mono',monospace;padding-bottom:4px;border-bottom:1px solid #eee;margin-top:8px;">Main Section</div>
-
-            <div class="form-group">
-              <label>Description *</label>
-              <textarea id="ni-desc" placeholder="Describe the issue or user story in detail…" rows="4" required></textarea>
-            </div>
-
-            <!-- Right Panel Fields -->
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);font-family:'Roboto Mono',monospace;padding-bottom:4px;border-bottom:1px solid #eee;margin-top:8px;">Planning Fields</div>
-
-            <div class="form-row-3">
-              <div class="form-group">
-                <label>Story Points</label>
-                <select class="form-control" id="ni-story-points">
-                  <option value="">— None —</option>
-                  <option value="1">1 (1–2 hrs)</option>
-                  <option value="2">2 (3–4 hrs)</option>
-                  <option value="3">3 (5–8 hrs)</option>
-                  <option value="5">5 (8–16 hrs)</option>
-                  <option value="8">8 (24–32 hrs)</option>
-                  <option value="13">13 (40–56 hrs)</option>
+                  <option value="New" selected>New</option>
+                  <option value="Bug">Bug</option>
+                  <option value="Open">Open</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Resolved">Resolved</option>
                 </select>
               </div>
               <div class="form-group">
@@ -507,30 +463,171 @@ select.form-control option { background: #ffffff; color: #333333; }
                   <option value="5-Low">5 – Low</option>
                 </select>
               </div>
+            </div>
+
+            <div class="form-row">
               <div class="form-group">
                 <label>Issued By</label>
                 <select class="form-control" id="ni-issued-by">
                   <option value="">— Select —</option>
                 </select>
               </div>
+              <div class="form-group">
+                <label>Assigned To</label>
+                <select class="form-control" id="ni-assigned-to">
+                  <option value="">— Unassigned —</option>
+                </select>
+              </div>
             </div>
+
             <div class="form-group">
               <label>Date Identified</label>
               <input type="date" id="ni-date" required />
-            </div>
-
-            <!-- Development Section -->
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);font-family:'Roboto Mono',monospace;padding-bottom:4px;border-bottom:1px solid #eee;margin-top:8px;">Development Section</div>
-
-            <div class="form-group">
-              <label>Acceptance Criteria</label>
-              <textarea id="ni-acceptance-criteria" placeholder="Conditions that must be met for this story to be considered complete…" rows="4"></textarea>
             </div>
 
             <div style="display:flex;gap:10px;justify-content:flex-end;padding-top:6px;">
               <button type="button" class="btn btn-ghost" onclick="navigate('issues')">Cancel</button>
               <button type="submit" class="btn btn-primary" id="ni-submit-btn">Create Issue</button>
             </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== USER STORY ===== -->
+    <div class="view" id="view-user-story">
+      <div class="card">
+        <div class="card-header"><div class="card-title">📖 Create User Story</div></div>
+        <div class="card-body">
+          <form id="user-story-form" onsubmit="submitUserStory(event)" style="display:flex;flex-direction:column;gap:0;">
+
+            <!-- HEADER SECTION -->
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#cc0000;font-family:'Roboto Mono',monospace;padding:0 0 8px 0;border-bottom:2px solid rgba(204,0,0,0.15);margin-bottom:18px;">Header Section</div>
+
+            <div class="form-group" style="margin-bottom:14px;">
+              <label>Title * <span style="color:#aaa;font-size:9px;font-weight:400;text-transform:none;">— Short description of the story</span></label>
+              <input type="text" id="us-title" placeholder="e.g. As a user, I want to export inventory so that I can review it offline" required />
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;">
+              <div class="form-group">
+                <label>State *</label>
+                <select class="form-control" id="us-state" required>
+                  <option value="Draft" selected>Draft — Created, not yet reviewed</option>
+                  <option value="For Review">For Review — Awaiting PO approval</option>
+                  <option value="Approved">Approved — Ready for sprint planning</option>
+                  <option value="In Development">In Development — Being worked on</option>
+                  <option value="For Testing">For Testing — Dev complete, ready for QA</option>
+                  <option value="QA Failed">QA Failed — Issues found, back to Dev</option>
+                  <option value="For UAT">For UAT — Passed QA, awaiting validation</option>
+                  <option value="Ready for Deployment">Ready for Deployment — UAT approved</option>
+                  <option value="Deployed">Deployed — Successfully released</option>
+                  <option value="Closed">Closed — Fully completed</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Assigned To</label>
+                <select class="form-control" id="us-assigned-to">
+                  <option value="">— Unassigned —</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Issued By</label>
+                <select class="form-control" id="us-issued-by">
+                  <option value="">— Select —</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;">
+              <div class="form-group">
+                <label>Area Path <span style="color:#aaa;font-size:9px;font-weight:400;text-transform:none;">— Team or department (optional)</span></label>
+                <input type="text" id="us-area-path" placeholder="e.g. Backend Team" />
+              </div>
+              <div class="form-group">
+                <label>Iteration Path <span style="color:#aaa;font-size:9px;font-weight:400;text-transform:none;">— Sprint assignment</span></label>
+                <input type="text" id="us-iteration-path" placeholder="e.g. Sprint 5" />
+              </div>
+            </div>
+
+            <!-- MAIN SECTION -->
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#cc0000;font-family:'Roboto Mono',monospace;padding:0 0 8px 0;border-bottom:2px solid rgba(204,0,0,0.15);margin-bottom:18px;">Main Section</div>
+
+            <div class="form-group" style="margin-bottom:14px;">
+              <label>Description *</label>
+              <textarea id="us-desc" placeholder="Describe the user story in detail…" rows="4" required></textarea>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;">
+              <div class="form-group">
+                <label>Dashboard</label>
+                <input type="text" id="us-dashboard" placeholder="e.g. MSP Dashboard" />
+              </div>
+              <div class="form-group">
+                <label>Module</label>
+                <input type="text" id="us-module" placeholder="e.g. Inventory" />
+              </div>
+            </div>
+
+            <!-- RIGHT PANEL (Story Points + Priority) -->
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#cc0000;font-family:'Roboto Mono',monospace;padding:0 0 8px 0;border-bottom:2px solid rgba(204,0,0,0.15);margin-bottom:18px;">Planning Fields</div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+
+              <!-- Story Points box -->
+              <div style="background:#fff8f8;border:1px solid rgba(204,0,0,0.15);border-radius:10px;padding:16px 18px;">
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#cc0000;font-family:'Roboto Mono',monospace;margin-bottom:10px;">Story Points</div>
+                <select class="form-control" id="us-story-points" style="margin-bottom:12px;">
+                  <option value="">— None —</option>
+                  <option value="1">1 point — 1–2 hours</option>
+                  <option value="2">2 points — 3–4 hours</option>
+                  <option value="3">3 points — 5–8 hours</option>
+                  <option value="5">5 points — 8–16 hours</option>
+                  <option value="8">8 points — 24–32 hours</option>
+                  <option value="13">13 points — 40–56 hours</option>
+                </select>
+                <div style="font-size:11px;color:#aaa;line-height:1.6;">
+                  1 = Tiny &nbsp;·&nbsp; 2 = Simple &nbsp;·&nbsp; 3 = Standard<br>
+                  5 = Complex &nbsp;·&nbsp; 8 = Very Complex &nbsp;·&nbsp; 13 = Huge
+                </div>
+              </div>
+
+              <!-- Priority box -->
+              <div style="background:#fff8f8;border:1px solid rgba(204,0,0,0.15);border-radius:10px;padding:16px 18px;">
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#cc0000;font-family:'Roboto Mono',monospace;margin-bottom:10px;">Priority — Business Importance</div>
+                <select class="form-control" id="us-priority" style="margin-bottom:12px;">
+                  <option value="1-Urgent">1 – Urgent &nbsp;(System outage / data loss)</option>
+                  <option value="2-Critical">2 – Critical &nbsp;(Blocks dev or production)</option>
+                  <option value="3-High">3 – High &nbsp;(Major functionality affected)</option>
+                  <option value="4-Medium" selected>4 – Medium &nbsp;(Moderate impact)</option>
+                  <option value="5-Low">5 – Low &nbsp;(Minor / cosmetic)</option>
+                </select>
+                <div style="font-size:11px;color:#aaa;line-height:1.6;">
+                  1–2 = Stop all work, fix immediately<br>
+                  3 = Fix in current sprint &nbsp;·&nbsp; 4–5 = Schedule
+                </div>
+              </div>
+
+            </div>
+
+            <!-- DEVELOPMENT SECTION -->
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#cc0000;font-family:'Roboto Mono',monospace;padding:0 0 8px 0;border-bottom:2px solid rgba(204,0,0,0.15);margin-bottom:18px;">Development Section</div>
+
+            <div class="form-group" style="margin-bottom:14px;">
+              <label>Acceptance Criteria <span style="color:#aaa;font-size:9px;font-weight:400;text-transform:none;">— Conditions to consider story complete</span></label>
+              <textarea id="us-acceptance-criteria" placeholder="e.g.&#10;- User can click Export button on Inventory page&#10;- File downloads as .xlsx with correct headers&#10;- Empty inventory shows a friendly message" rows="5"></textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom:20px;">
+              <label>Date Identified</label>
+              <input type="date" id="us-date" required />
+            </div>
+
+            <div style="display:flex;gap:10px;justify-content:flex-end;padding-top:6px;border-top:1px solid #eee;">
+              <button type="button" class="btn btn-ghost" onclick="navigate('issues')">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="us-submit-btn">📖 Create User Story</button>
+            </div>
+
           </form>
         </div>
       </div>
@@ -775,11 +872,12 @@ function navigate(view) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById(`view-${view}`)?.classList.add('active');
   document.querySelector(`.nav-item[data-view="${view}"]`)?.classList.add('active');
-  const titles = { dashboard:'Dashboard', issues:'All Issues', 'new-issue':'Log New Issue', import:'Import CSV', reports:'Reports' };
+  const titles = { dashboard:'Dashboard', issues:'All Issues', 'new-issue':'Log New Issue', 'user-story':'Create User Story', import:'Import CSV', reports:'Reports' };
   document.getElementById('topbar-title').textContent = titles[view] || view;
-  if (view === 'issues')   loadIssues();
-  if (view === 'reports')  loadReportHistory();
-  if (view === 'new-issue') setTodayDate();
+  if (view === 'issues')      loadIssues();
+  if (view === 'reports')     loadReportHistory();
+  if (view === 'new-issue')   setTodayDate();
+  if (view === 'user-story')  setUserStoryDate();
 }
 
 // ============================================================
@@ -811,7 +909,7 @@ async function loadUsers() {
 }
 
 function populateUserSelects() {
-  const selects = ['ni-issued-by', 'ni-assigned-to', 'import-user', 'edit-assigned-to'];
+  const selects = ['ni-issued-by', 'ni-assigned-to', 'us-issued-by', 'us-assigned-to', 'import-user', 'edit-assigned-to'];
   selects.forEach(id => {
     const sel = document.getElementById(id);
     if (!sel) return;
@@ -1157,19 +1255,14 @@ async function submitNewIssue(e) {
   btn.innerHTML = '<div class="loader"></div> Saving…';
 
   const dto = {
-    title:               document.getElementById('ni-title').value.trim()               || null,
-    dashboard:           document.getElementById('ni-dashboard').value.trim()           || null,
-    module:              document.getElementById('ni-module').value.trim()              || null,
-    description:         document.getElementById('ni-desc').value.trim(),
-    state:               document.getElementById('ni-state').value                      || 'Draft',
-    priority:            document.getElementById('ni-priority').value                   || '4-Medium',
-    storyPoints:         document.getElementById('ni-story-points').value               || null,
-    areaPath:            document.getElementById('ni-area-path').value.trim()           || null,
-    iterationPath:       document.getElementById('ni-iteration-path').value.trim()      || null,
-    acceptanceCriteria:  document.getElementById('ni-acceptance-criteria').value.trim() || null,
-    issuedBy:            parseInt(document.getElementById('ni-issued-by').value)        || null,
-    assignedTo:          parseInt(document.getElementById('ni-assigned-to').value)      || null,
-    dateIdentified:      document.getElementById('ni-date').value,
+    dashboard:      document.getElementById('ni-dashboard').value.trim() || null,
+    module:         document.getElementById('ni-module').value.trim()    || null,
+    description:    document.getElementById('ni-desc').value.trim(),
+    state:          document.getElementById('ni-state').value            || 'New',
+    priority:       document.getElementById('ni-priority').value         || '4-Medium',
+    issuedBy:       parseInt(document.getElementById('ni-issued-by').value)   || null,
+    assignedTo:     parseInt(document.getElementById('ni-assigned-to').value) || null,
+    dateIdentified: document.getElementById('ni-date').value,
   };
 
   try {
@@ -1189,6 +1282,55 @@ async function submitNewIssue(e) {
     btn.disabled = false;
     btn.textContent = 'Create Issue';
   }
+}
+
+// ============================================================
+// USER STORY
+// ============================================================
+async function submitUserStory(e) {
+  e.preventDefault();
+  const btn = document.getElementById('us-submit-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="loader"></div> Saving…';
+
+  const dto = {
+    title:              document.getElementById('us-title').value.trim(),
+    dashboard:          document.getElementById('us-dashboard').value.trim()          || null,
+    module:             document.getElementById('us-module').value.trim()             || null,
+    description:        document.getElementById('us-desc').value.trim(),
+    state:              document.getElementById('us-state').value                     || 'Draft',
+    priority:           document.getElementById('us-priority').value                  || '4-Medium',
+    storyPoints:        document.getElementById('us-story-points').value              || null,
+    areaPath:           document.getElementById('us-area-path').value.trim()          || null,
+    iterationPath:      document.getElementById('us-iteration-path').value.trim()     || null,
+    acceptanceCriteria: document.getElementById('us-acceptance-criteria').value.trim()|| null,
+    issuedBy:           parseInt(document.getElementById('us-issued-by').value)       || null,
+    assignedTo:         parseInt(document.getElementById('us-assigned-to').value)     || null,
+    dateIdentified:     document.getElementById('us-date').value,
+  };
+
+  try {
+    const res = await apiFetch('/create_issue.php', { method: 'POST', body: JSON.stringify(dto) });
+    if (res.success) {
+      toast('User Story created successfully!', 'success');
+      document.getElementById('user-story-form').reset();
+      setUserStoryDate();
+      loadDashboard();
+      navigate('issues');
+    } else {
+      toast(res.message || 'Failed to create user story.', 'error');
+    }
+  } catch {
+    toast('Failed to create user story.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '📖 Create User Story';
+  }
+}
+
+function setUserStoryDate() {
+  const d = document.getElementById('us-date');
+  if (d) d.value = new Date().toISOString().split('T')[0];
 }
 
 function setTodayDate() {
