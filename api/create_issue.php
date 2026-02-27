@@ -1,10 +1,7 @@
 <?php
-
-// api/create_issue.php
 require_once '../config/database.php';
 
 try {
-    // 1. Get JSON data from the frontend
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
@@ -13,28 +10,36 @@ try {
         exit;
     }
 
-    // 2. Prepare the SQL (Conversion of IssueService.cs logic)
-    $sql = "INSERT INTO issues (dashboard, module, description, state, priority, issued_by, assigned_to, date_identified, source) 
-            VALUES (:dashboard, :module, :description, :state, :priority, :issuedBy, :assignedTo, :dateIdentified, 'Manual')";
-    
-    $stmt = $pdo->prepare($sql);
+    $sql = "INSERT INTO issues 
+                (title, dashboard, module, description, state, priority,
+                 story_points, area_path, iteration_path, acceptance_criteria,
+                 issued_by, assigned_to, date_identified, source)
+            VALUES 
+                (:title, :dashboard, :module, :description, :state, :priority,
+                 :storyPoints, :areaPath, :iterationPath, :acceptanceCriteria,
+                 :issuedBy, :assignedTo, :dateIdentified, 'Manual')";
 
-    // 3. Execute with data from the Frontend DTO
+    $stmt = $pdo->prepare($sql);
     $stmt->execute([
-        ':dashboard'      => $data['dashboard'] ?? null,
-        ':module'         => $data['module'] ?? null,
-        ':description'    => $data['description'],
-        ':state'          => $data['state'] ?? 'New',
-        ':priority'       => $data['priority'] ?? 'Medium',
-        ':issuedBy'       => $data['issuedBy'] ?? null,
-        ':assignedTo'     => $data['assignedTo'] ?? null,
-        ':dateIdentified' => $data['dateIdentified'] ?? date('Y-m-d')
+        ':title'               => $data['title']              ?? null,
+        ':dashboard'           => $data['dashboard']          ?? null,
+        ':module'              => $data['module']             ?? null,
+        ':description'         => $data['description'],
+        ':state'               => $data['state']              ?? 'Draft',
+        ':priority'            => $data['priority']           ?? '4-Medium',
+        ':storyPoints'         => $data['storyPoints']        ?? null,
+        ':areaPath'            => $data['areaPath']           ?? null,
+        ':iterationPath'       => $data['iterationPath']      ?? null,
+        ':acceptanceCriteria'  => $data['acceptanceCriteria'] ?? null,
+        ':issuedBy'            => $data['issuedBy']           ?? null,
+        ':assignedTo'          => $data['assignedTo']         ?? null,
+        ':dateIdentified'      => $data['dateIdentified']     ?? date('Y-m-d'),
     ]);
 
     $newId = $pdo->lastInsertId();
 
     echo json_encode([
-        "success" => true, 
+        "success" => true,
         "message" => "Issue created successfully.",
         "data"    => ["id" => $newId]
     ]);
