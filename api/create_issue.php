@@ -1,4 +1,5 @@
 <?php
+
 // api/create_issue.php
 require_once '../config/database.php';
 

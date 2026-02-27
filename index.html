@@ -923,68 +923,69 @@ select.form-control option { background: #ffffff; color: #333333; }
       </div>
     </div>
 
-    <!-- ===== NEW ISSUE VIEW ===== -->
-    <div class="view" id="view-new-issue">
+   <div class="view" id="view-new-issue">
   <div class="card" style="width: 100%; max-width: none;">
-        <div class="card-header"><div class="card-title">Log New Issue</div></div>
-        <div class="card-body">
-          <form id="new-issue-form" onsubmit="submitNewIssue(event)" style="display:flex;flex-direction:column;gap:16px;">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Dashboard</label>
-                <input type="text" id="ni-dashboard" placeholder="e.g. MSP Dashboard" />
-              </div>
-              <div class="form-group">
-                <label>Module</label>
-                <input type="text" id="ni-module" placeholder="e.g. Inventory" />
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Description *</label>
-              <textarea id="ni-desc" placeholder="Describe the issue in detail…" rows="4" required></textarea>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>State</label>
-                <select class="form-control" id="ni-state">
-                  <option>New</option><option>Bug</option><option>Open</option>
-                  <option>In Progress</option><option>Resolved</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Priority</label>
-                <select class="form-control" id="ni-priority">
-                  <option>Low</option><option selected>Medium</option>
-                  <option>High</option><option>Critical</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Issued By</label>
-                <select class="form-control" id="ni-issued-by">
-                  <option value="">— Select —</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Assigned To</label>
-                <select class="form-control" id="ni-assigned-to">
-                  <option value="">— Unassigned —</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Date Identified</label>
-              <input type="date" id="ni-date" />
-            </div>
-            <div style="display:flex;gap:10px;justify-content:flex-end;padding-top:6px;">
-              <button type="button" class="btn btn-ghost" onclick="navigate('issues')">Cancel</button>
-              <button type="submit" class="btn btn-primary" id="ni-submit-btn">Create Issue</button>
-            </div>
-          </form>
+    <div class="card-header"><div class="card-title">Log New Issue</div></div>
+    <div class="card-body">
+      <form id="new-issue-form" onsubmit="submitNewIssue(event)" style="display:flex;flex-direction:column;gap:16px;">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Dashboard</label>
+            <input type="text" id="ni-dashboard" placeholder="e.g. MSP Dashboard" required />
+          </div>
+          <div class="form-group">
+            <label>Module</label>
+            <input type="text" id="ni-module" placeholder="e.g. Inventory" required />
+          </div>
         </div>
-      </div>
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea id="ni-desc" placeholder="Describe the issue in detail…" rows="4" required></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>State</label>
+            <select class="form-control" id="ni-state" required>
+              <option value="" disabled selected>-- Select State --</option>
+              <option>New</option><option>Bug</option><option>Open</option>
+              <option>In Progress</option><option>Resolved</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Priority</label>
+            <select class="form-control" id="ni-priority" required>
+              <option value="" disabled>-- Select Priority --</option>
+              <option>Low</option><option selected>Medium</option>
+              <option>High</option><option>Critical</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Issued By</label>
+            <select class="form-control" id="ni-issued-by" required>
+              <option value="" disabled selected>— Select —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Assigned To</label>
+            <select class="form-control" id="ni-assigned-to" required>
+              <option value="" disabled selected>— Unassigned —</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Date Identified</label>
+          <input type="date" id="ni-date" required />
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;padding-top:6px;">
+          <button type="button" class="btn btn-ghost" onclick="navigate('issues')">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="ni-submit-btn">Create Issue</button>
+        </div>
+      </form>
     </div>
+  </div>
+</div>
 
     <!-- ===== IMPORT VIEW ===== -->
     <div class="view" id="view-import">
@@ -1454,10 +1455,9 @@ async function viewIssue(id) {
             ${comments.length
               ? comments.map(c => `
                 <div class="comment-item">
-                  <div><span class="comment-author">${escHtml(c.userName||'User')}</span>
-                  <span class="comment-time">${fmtDate(c.createdAt)}</span></div>
-                  <div class="comment-text">${escHtml(c.commentText)}</div>
-                </div>`).join('')
+                  <div>
+                    <span class="comment-author">${escHtml(c.author || 'User')}</span> <span class="comment-time">${fmtDate(c.created_at || c.createdAt)}</span> </div>
+                  <div class="comment-text">${escHtml(c.comment)}</div> </div>`).join('')
               : `<div style="color:var(--text-dim);font-size:12px;">No comments yet.</div>`
             }
           </div>
@@ -1500,27 +1500,36 @@ async function viewIssue(id) {
 }
 
 async function addComment() {
-  const userId = parseInt(document.getElementById('comment-user').value);
-  const text   = document.getElementById('comment-text').value.trim();
+  const authorEl = document.getElementById('comment-user');
+  const textEl   = document.getElementById('comment-text');
+
+  if (!authorEl || !textEl) return;
+
+  // Use .text to get the name (e.g., "Admin User") instead of the numeric ID
+  const author = authorEl.options[authorEl.selectedIndex].text; 
+  const text   = textEl.value.trim();
+  
   if (!text) return;
 
   try {
-    await apiFetch(`/comments.php`, { 
+    const res = await apiFetch(`/add_comment.php`, { 
       method: 'POST', 
       body: JSON.stringify({
         issueId: currentIssueId,
-        userId: userId,
-        commentText: text
+        author: author,
+        comment: text
       }) 
     });
     
-    toast('Comment added!', 'success');
-    viewIssue(currentIssueId); // Refresh the modal to show the new comment
+    if (res.success) {
+      toast('Comment added!', 'success');
+      textEl.value = ''; // Clear the box
+      viewIssue(currentIssueId); // Refresh the list
+    }
   } catch (err) {
-    toast('Failed to add comment', 'error');
+    toast('Failed to save comment', 'error');
   }
 }
-
 
 // EDIT ISSUE
 
