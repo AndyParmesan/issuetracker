@@ -1,49 +1,90 @@
 <?php
-// Enable error reporting for debugging
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 require_once '../config/database.php';
 
-$data = json_decode(file_get_contents("php://input"), true);
-$dateRange = $data['dateRange'] ?? 'Last 30 Days';
-$statusFilter = $data['statusFilter'] ?? 'All Statuses';
-
 try {
-    // 1. Get stats from the issues table
-    $stmt = $pdo->query("SELECT 
-        COUNT(*) as totalIssues,
-        SUM(CASE WHEN state = 'New' THEN 1 ELSE 0 END) as newCount,
-        SUM(CASE WHEN state = 'Bug' THEN 1 ELSE 0 END) as bugCount,
-        SUM(CASE WHEN state = 'Open' THEN 1 ELSE 0 END) as openCount,
-        SUM(CASE WHEN state = 'In Progress' THEN 1 ELSE 0 END) as inProgressCount,
-        SUM(CASE WHEN state = 'Resolved' THEN 1 ELSE 0 END) as resolvedCount
-    FROM issues");
-    $stats = $stmt->fetch(PDO::FETCH_ASSOC);
+    $input      = json_decode(file_get_contents('php://input'), true);
+    $dateRange  = $input['dateRange']    ?? 'Last 30 Days';
+    $statusFilter = $input['statusFilter'] ?? 'All Statuses';
 
-    // 2. UPDATED QUERY: Using underscores (date_range, status_filter, etc.)
-    // These names must match your phpMyAdmin columns exactly!
-    $insertQuery = "INSERT INTO reports (
-        date_range, status_filter, total_issues, 
-        new_count, bug_count, open_count, in_progress_count, resolved_count, generated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
-    
-    $insertStmt = $pdo->prepare($insertQuery);
-    $insertStmt->execute([
-        $dateRange, 
-        $statusFilter, 
-        $stats['totalIssues'],
-        $stats['newCount'] ?? 0, 
-        $stats['bugCount'] ?? 0, 
-        $stats['openCount'] ?? 0, 
-        $stats['inProgressCount'] ?? 0, 
-        $stats['resolvedCount'] ?? 0
+    // Build date condition
+    switch ($dateRange) {
+        case 'This Day':
+            $dateCond = "AND DATE(i.date_identified) = CURDATE()"; break;
+        case 'Last 7 Days':
+            $dateCond = "AND i.date_identified >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)"; break;
+        case 'Last 90 Days':
+            $dateCond = "AND i.date_identified >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)"; break;
+        case 'This Year':
+            $dateCond = "AND YEAR(i.date_identified) = YEAR(CURDATE())"; break;
+        default: // Last 30 Days
+            $dateCond = "AND i.date_identified >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)"; break;
+    }
+
+    // Build status condition
+    $statusCond = '';
+    $params = [];
+    if ($statusFilter !== 'All Statuses' && !empty($statusFilter)) {
+        $statusCond = "AND i.state = :state";
+        $params[':state'] = $statusFilter;
+    }
+
+    $baseWhere = "WHERE 1=1 $dateCond $statusCond";
+
+    // Total issues in range/filter
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM issues i $baseWhere");
+    $stmt->execute($params);
+    $totalIssues = (int)$stmt->fetchColumn();
+
+    // Count by state
+    $counts = ['New'=>0,'Draft'=>0,'Bug'=>0,'Open'=>0,'In Progress'=>0,'Resolved'=>0,
+               'For Review'=>0,'Approved'=>0,'In Development'=>0,'For Testing'=>0,
+               'QA Failed'=>0,'For UAT'=>0,'Ready for Deployment'=>0,'Deployed'=>0,'Closed'=>0];
+
+    $stmt = $pdo->prepare("SELECT state, COUNT(*) as cnt FROM issues i $baseWhere GROUP BY state");
+    $stmt->execute($params);
+    foreach ($stmt->fetchAll() as $row) {
+        $counts[$row['state']] = (int)$row['cnt'];
+    }
+
+    $newCount        = ($counts['New']   + $counts['Draft'] + $counts['For Review'] + $counts['Approved']);
+    $bugCount        = ($counts['Bug']   + $counts['QA Failed']);
+    $openCount       = ($counts['Open']);
+    $inProgressCount = ($counts['In Progress'] + $counts['In Development'] + $counts['For Testing'] +
+                        $counts['For UAT'] + $counts['Ready for Deployment']);
+    $resolvedCount   = ($counts['Resolved'] + $counts['Deployed'] + $counts['Closed']);
+
+    // Save report
+    $stmt = $pdo->prepare("INSERT INTO reports (total_issues, new_count, bug_count, open_count, in_progress_count, resolved_count, date_range, status_filter, generated_at)
+                           VALUES (:total, :new, :bug, :open, :prog, :res, :dr, :sf, NOW())");
+    $stmt->execute([
+        ':total' => $totalIssues,
+        ':new'   => $newCount,
+        ':bug'   => $bugCount,
+        ':open'  => $openCount,
+        ':prog'  => $inProgressCount,
+        ':res'   => $resolvedCount,
+        ':dr'    => $dateRange,
+        ':sf'    => $statusFilter,
     ]);
+    $reportId = $pdo->lastInsertId();
 
-    $stats['id'] = $pdo->lastInsertId();
-    echo json_encode(["success" => true, "data" => $stats]);
+    echo json_encode([
+        "success" => true,
+        "data" => [
+            "id"              => $reportId,
+            "totalIssues"     => $totalIssues,
+            "newCount"        => $newCount,
+            "bugCount"        => $bugCount,
+            "openCount"       => $openCount,
+            "inProgressCount" => $inProgressCount,
+            "resolvedCount"   => $resolvedCount,
+            "dateRange"       => $dateRange,
+            "statusFilter"    => $statusFilter,
+        ]
+    ]);
 
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(["success" => false, "error" => $e->getMessage()]);
+    echo json_encode(["success" => false, "message" => "DB Error: " . $e->getMessage()]);
 }
+?>
