@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
     id         INT AUTO_INCREMENT PRIMARY KEY,
     name       VARCHAR(120) NOT NULL,
     email      VARCHAR(180) NOT NULL UNIQUE,
-    role       ENUM('admin','staff','viewer') NOT NULL DEFAULT 'staff',
+    role       ENUM('admin','staff','viewer','developer','reporter') NOT NULL DEFAULT 'staff',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -139,6 +139,9 @@ CREATE TABLE IF NOT EXISTS issue_imports (
 
 -- ── Seed Users ────────────────────────────────────────────────
 INSERT IGNORE INTO users (name, email, role) VALUES
-  ('Admin User',  'admin@issuetracker.local',  'admin'),
-  ('Staff One',   'staff1@issuetracker.local', 'staff'),
-  ('Staff Two',   'staff2@issuetracker.local', 'staff');
+  ('Stephen Dumili', 'stephen@issuetracker.local', 'developer'),
+  ('Rocky',          'rocky@issuetracker.local',   'developer'),
+  ('Dianne',         'dianne@issuetracker.local',  'reporter'),
+  ('Kath',           'kath@issuetracker.local',    'reporter'),
+  ('Jemson',         'jemson@issuetracker.local',  'reporter'),
+  ('Josh',           'josh@issuetracker.local',    'reporter');

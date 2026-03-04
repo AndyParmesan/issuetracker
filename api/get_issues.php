@@ -13,6 +13,7 @@ try {
                 i.module,
                 i.description,
                 i.state,
+                i.status,
                 i.priority,
                 i.story_points,
                 i.area_path,

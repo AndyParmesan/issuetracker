@@ -16,7 +16,8 @@ try {
     $params = [':id' => $id];
 
     // Original fields
-    if (isset($data['state']))          { $fields[] = "state = :state";                   $params[':state']         = $data['state']; }
+    if (isset($data['state']))  { $fields[] = 'state = :state';   $params[':state']  = $data['state']; }
+    if (isset($data['status'])) { $fields[] = 'status = :status'; $params[':status'] = $data['status']; }
     if (isset($data['priority']))       { $fields[] = "priority = :priority";             $params[':priority']      = $data['priority']; }
     if (isset($data['assignedTo']))     { $fields[] = "assigned_to = :assignedTo";        $params[':assignedTo']    = $data['assignedTo'] ?: null; }
 

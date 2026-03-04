@@ -11,11 +11,11 @@ try {
     }
 
     $sql = "INSERT INTO issues 
-                (title, dashboard, module, description, state, priority,
+                (title, dashboard, module, description, state, status, priority,
                  story_points, area_path, iteration_path, acceptance_criteria,
                  issued_by, assigned_to, date_identified, source)
             VALUES 
-                (:title, :dashboard, :module, :description, :state, :priority,
+                (:title, :dashboard, :module, :description, :state, :status, :priority,
                  :storyPoints, :areaPath, :iterationPath, :acceptanceCriteria,
                  :issuedBy, :assignedTo, :dateIdentified, 'Manual')";
 
@@ -25,7 +25,8 @@ try {
         ':dashboard'           => $data['dashboard']          ?? null,
         ':module'              => $data['module']             ?? null,
         ':description'         => $data['description'],
-        ':state'               => $data['state']              ?? 'Draft',
+        ':state'               => $data['state']              ?? 'New',
+        ':status'              => 'In Progress',   // Always starts as In Progress
         ':priority'            => $data['priority']           ?? '4-Medium',
         ':storyPoints'         => $data['storyPoints']        ?? null,
         ':areaPath'            => $data['areaPath']           ?? null,

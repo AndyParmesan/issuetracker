@@ -1,0 +1,49 @@
+=====================================================
+  ISSUETRACKER — FULL DEPLOY PACKAGE
+  Generated: $(date)
+=====================================================
+
+STEP 1 — DATABASE (run in phpMyAdmin SQL tab)
+----------------------------------------------
+  1. config/add_status_column.sql   ← Run this FIRST
+  2. config/fix_users.sql           ← Run this SECOND (sets reporter/developer roles)
+  (config/schema_v2.sql is the full schema — only needed for fresh installs)
+
+STEP 2 — FILES (copy to htdocs/issuetracker/)
+----------------------------------------------
+  index.html          → htdocs/issuetracker/index.html
+
+  api/ folder — copy ALL .php files to htdocs/issuetracker/api/
+  ├── add_comment.php         (unchanged)
+  ├── comments.php            (UPDATED — returns id field)
+  ├── create_issue.php        (UPDATED — auto-sets status=In Progress)
+  ├── create_report.php       (unchanged)
+  ├── delete_attachment.php   (unchanged)
+  ├── delete_comment.php      (NEW — delete comment by id)
+  ├── delete_issue.php        (unchanged)
+  ├── get_issue_detail.php    (UPDATED — returns status field)
+  ├── get_issues.php          (UPDATED — returns status in SELECT)
+  ├── get_stats.php           (unchanged)
+  ├── get_users.php           (UPDATED — returns role field)
+  ├── update_issue.php        (UPDATED — handles status separately)
+  ├── export_issues_excel.php (old — no longer called, keep or delete)
+  ├── import_csv.php          (old — no longer called, keep or delete)
+  └── import_xlsx.php         (old — no longer called, keep or delete)
+
+  NOTE: These files must remain on your server (not in this package):
+  ├── attachments.php
+  ├── download_attachment.php
+  ├── download_report.php
+  └── get_reports.php
+
+STEP 3 — LOGO
+----------------------------------------------
+  Make sure Castles_Technology_logo.png is in htdocs/issuetracker/
+  (same folder as index.html)
+
+STEP 4 — NO COMPOSER NEEDED
+----------------------------------------------
+  XLSX import/export now runs entirely in the browser
+  using the xlsx-js-style CDN. No PHP dependencies required.
+
+=====================================================

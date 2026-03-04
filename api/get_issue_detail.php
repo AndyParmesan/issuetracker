@@ -28,6 +28,7 @@ try {
         $issue['assignedToName'] = $issue['assigned_to_name'];
         $issue['dateIdentified'] = $issue['date_identified'];
         $issue['storyPoints']    = $issue['story_points'];
+        $issue['status']         = $issue['status'] ?? null;
         $issue['areaPath']       = $issue['area_path'];
         $issue['iterationPath']  = $issue['iteration_path'];
         $issue['acceptanceCriteria'] = $issue['acceptance_criteria'];

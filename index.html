@@ -6,8 +6,9 @@
 <title>Issue Tracker — Castles Technology</title>
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style/dist/xlsx.bundle.js"></script>
 <style>
-/*RESET & BASE*/
+/* ===== RESET & BASE ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -49,7 +50,7 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--steel); border-radius: 99px; }
 
-/*SIDEBAR*/
+/* ===== SIDEBAR ===== */
 #sidebar {
   width: var(--sidebar-w);
   min-height: 100vh;
@@ -62,8 +63,9 @@ body {
   transition: transform 0.3s ease;
 }
 .sidebar-logo {
-  padding: 22px 20px 16px;
+  padding: 16px 12px 14px;
   border-bottom: 1px solid rgba(255,255,255,0.2);
+  text-align: center;
 }
 .logo-mark { display: flex; align-items: center; gap: 10px; }
 .logo-text { font-size: 14px; font-weight: 700; color: #ffffff; line-height: 1.2; }
@@ -82,7 +84,7 @@ body {
 .nav-badge { margin-left: auto; background: var(--danger); color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 99px; font-family: 'Roboto Mono', monospace; }
 .sidebar-footer { padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 11px; color: rgba(255,255,255,0.6); font-family: 'Roboto Mono', monospace; }
 
-/*MAIN*/
+/* ===== MAIN ===== */
 #main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 #topbar {
   height: var(--topbar-h); background: var(--glass); backdrop-filter: blur(12px);
@@ -97,12 +99,12 @@ body {
 .topbar-btn { display: flex; align-items: center; gap: 7px; background: var(--accent); color: #fff; font-weight: 700; font-size: 12.5px; border: none; border-radius: 8px; padding: 7px 16px; cursor: pointer; transition: background 0.2s; font-family: 'Raleway', sans-serif; }
 .topbar-btn:hover { background: var(--accent-dim); }
 
-/*CONTENT*/
+/* ===== CONTENT ===== */
 #content { flex: 1; padding: 28px; display: flex; flex-direction: column; gap: 24px; }
 .view { display: none; flex-direction: column; gap: 24px; }
 .view.active { display: flex; }
 
-/*STAT CARDS*/
+/* ===== STAT CARDS ===== */
 .stat-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
 .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.2s; }
 .stat-card:hover { transform: translateY(-2px); }
@@ -117,7 +119,7 @@ body {
 .stat-value { font-size: 30px; font-weight: 700; color: var(--text-bright); line-height: 1; }
 .stat-icon  { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 28px; opacity: 0.12; }
 
-/*CARDS*/
+/* ===== CARDS ===== */
 .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
 .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
 .card-title { font-size: 13px; font-weight: 600; color: var(--text-bright); text-transform: uppercase; letter-spacing: 0.06em; font-family: 'Roboto Mono', monospace; }
@@ -126,7 +128,7 @@ body {
 .charts-row { display: grid; grid-template-columns: 1fr 1.5fr; gap: 16px; }
 .chart-container { position: relative; height: 220px; }
 
-/*TABLE*/
+/* ===== TABLE ===== */
 .table-wrapper { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 thead th { padding: 10px 14px; text-align: left; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); font-family: 'Roboto Mono', monospace; border-bottom: 1px solid var(--border); white-space: nowrap; }
@@ -137,7 +139,7 @@ tbody td { padding: 11px 14px; color: var(--text-main); vertical-align: middle; 
 .td-id   { font-family: 'Roboto Mono', monospace; color: var(--text-dim); font-size: 11px; }
 .td-date { font-family: 'Roboto Mono', monospace; font-size: 11px; white-space: nowrap; }
 
-/*BADGES*/
+/* ===== BADGES ===== */
 .badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; }
 /* Original states */
 .badge-new        { background: rgba(74,158,206,0.15); color: #4a9ece; border: 1px solid rgba(74,158,206,0.3); }
@@ -169,10 +171,16 @@ tbody td { padding: 11px 14px; color: var(--text-main); vertical-align: middle; 
 .pri-medium    { background: rgba(232,160,32,0.2); color: #c88a00; }
 .pri-low       { background: rgba(46,158,107,0.2); color: var(--success); }
 
+/* Status badges (In Progress / Fixed / Resolved) */
+.badge-inprogress-status { background: rgba(232,160,32,0.15); color: #c88a00; border: 1px solid rgba(232,160,32,0.3); }
+.badge-fixed    { background: rgba(74,100,206,0.15);  color: #4a64ce; border: 1px solid rgba(74,100,206,0.3); }
+.badge-resolved-status { background: rgba(46,158,107,0.15); color: #2e9e6b; border: 1px solid rgba(46,158,107,0.3); }
+.badge-nostatus { background: rgba(150,150,150,0.1);  color: #aaa;    border: 1px solid rgba(150,150,150,0.2); }
+
 /* Story points badge */
 .sp-badge { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; font-size: 11px; font-weight: 700; font-family: 'Roboto Mono', monospace; background: rgba(204,0,0,0.1); color: var(--accent); border: 1px solid rgba(204,0,0,0.2); }
 
-/*BUTTONS*/
+/* ===== BUTTONS ===== */
 .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 7px; font-family: 'Raleway', sans-serif; font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
 .btn-primary { background: #ffffff; color: #000000; border: 1px solid #cccccc; }
 .btn-primary:hover { background: #f0f0f0; }
@@ -185,13 +193,13 @@ tbody td { padding: 11px 14px; color: var(--text-main); vertical-align: middle; 
 .btn-sm  { padding: 5px 10px; font-size: 11.5px; }
 .btn-xs  { padding: 3px 8px; font-size: 10.5px; }
 
-/*FILTER BAR*/
+/* ===== FILTER BAR ===== */
 .filter-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .filter-select { background: #ffffff; border: 1px solid var(--border); border-radius: 7px; color: var(--text-main); padding: 6px 12px; font-family: 'Raleway', sans-serif; font-size: 12.5px; cursor: pointer; outline: none; transition: border-color 0.2s; }
 .filter-select:hover, .filter-select:focus { border-color: rgba(204,0,0,0.4); }
 .filter-select option { background: #ffffff; color: #333333; }
 
-/*MODAL*/
+/* ===== MODAL ===== */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); z-index: 200; display: none; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
 .modal { background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-lg); width: 540px; max-width: 95vw; max-height: 90vh; overflow-y: auto; animation: slideUp 0.25s ease; }
@@ -203,7 +211,7 @@ tbody td { padding: 11px 14px; color: var(--text-main); vertical-align: middle; 
 .modal-body   { padding: 24px; display: flex; flex-direction: column; gap: 16px; color: #333; }
 .modal-footer { padding: 16px 24px; border-top: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end; }
 
-/*FORM*/
+/* ===== FORM ===== */
 .form-group { display: flex; flex-direction: column; gap: 6px; }
 .form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
@@ -218,19 +226,19 @@ input:focus, textarea:focus, select.form-control:focus { border-color: var(--acc
 textarea { resize: vertical; min-height: 80px; }
 select.form-control option { background: #ffffff; color: #333333; }
 
-/*STORY POINTS TABLE*/
+/* ===== STORY POINTS TABLE ===== */
 .sp-table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-top: 6px; }
 .sp-table th { padding: 6px 10px; background: #f8f8f8; border: 1px solid #eee; text-align: left; font-family: 'Roboto Mono', monospace; font-size: 10px; color: #888; }
 .sp-table td { padding: 6px 10px; border: 1px solid #eee; }
 
-/*DETAIL PANEL*/
+/* ===== DETAIL PANEL ===== */
 .detail-panel { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
 .detail-meta  { display: flex; flex-direction: column; gap: 10px; }
 .meta-row { display: flex; align-items: flex-start; gap: 10px; }
 .meta-key { font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-dim); text-transform: uppercase; font-family: 'Roboto Mono', monospace; min-width: 110px; padding-top: 2px; }
 .meta-val { color: var(--text-bright); font-size: 13px; }
 
-/*COMMENTS*/
+/* ===== COMMENTS ===== */
 .comments-section { display: flex; flex-direction: column; gap: 10px; }
 .comment-item { background: #f8f8f8; border: 1px solid #eee; border-radius: 8px; padding: 10px 14px; }
 .comment-author { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
@@ -239,14 +247,14 @@ select.form-control option { background: #ffffff; color: #333333; }
 .comment-input-row { display: flex; gap: 8px; margin-top: 6px; }
 .comment-input-row textarea { flex: 1; min-height: 50px; resize: none; }
 
-/*IMPORT*/
+/* ===== IMPORT ===== */
 .drop-zone { border: 2px dashed var(--border); border-radius: var(--radius-lg); padding: 40px 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: #fafafa; }
 .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: rgba(204,0,0,0.03); }
 .drop-zone .dz-icon  { font-size: 40px; margin-bottom: 12px; opacity: 0.6; }
 .drop-zone .dz-title { font-size: 15px; font-weight: 600; color: var(--text-bright); margin-bottom: 4px; }
 .drop-zone .dz-sub   { font-size: 12px; color: var(--text-dim); }
 
-/*REPORTS*/
+/* ===== REPORTS ===== */
 .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .report-stat-box { background: #f8f8f8; border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
 .report-stat-box .rs-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; font-family: 'Roboto Mono', monospace; }
@@ -258,7 +266,7 @@ select.form-control option { background: #ffffff; color: #333333; }
 .rh-title { font-size: 13px; font-weight: 600; color: var(--text-bright); }
 .rh-sub   { font-size: 11px; color: var(--text-dim); font-family: 'Roboto Mono', monospace; }
 
-/*ATTACHMENTS*/
+/* ===== ATTACHMENTS ===== */
 .attachments-section { margin-top: 16px; border-top: 1px solid #eee; padding-top: 14px; }
 .attachments-header  { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #888; font-family: 'Roboto Mono', monospace; margin-bottom: 10px; }
 .attachment-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
@@ -276,11 +284,11 @@ select.form-control option { background: #ffffff; color: #333333; }
 .btn-upload:hover { background: #fff0f0; }
 .btn-upload:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/*ACCEPTANCE CRITERIA*/
+/* ===== ACCEPTANCE CRITERIA ===== */
 .ac-box { background: #f8fff8; border: 1px solid rgba(46,158,107,0.2); border-radius: 8px; padding: 12px 14px; font-size: 12.5px; color: #333; white-space: pre-wrap; line-height: 1.6; }
 .ac-empty { color: #aaa; font-style: italic; font-size: 12px; }
 
-/*TOAST*/
+/* ===== TOAST ===== */
 #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
 .toast { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; font-size: 13px; color: var(--text-bright); display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); animation: toastIn 0.3s ease; min-width: 260px; max-width: 380px; }
 .toast.success { border-left: 3px solid var(--success); }
@@ -288,7 +296,7 @@ select.form-control option { background: #ffffff; color: #333333; }
 .toast.info    { border-left: 3px solid var(--sky); }
 @keyframes toastIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
 
-/*LOADER / EMPTY*/
+/* ===== LOADER / EMPTY ===== */
 .loader { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(0,0,0,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .empty-state { text-align: center; padding: 60px 20px; color: var(--text-dim); }
@@ -296,24 +304,21 @@ select.form-control option { background: #ffffff; color: #333333; }
 .empty-state .es-title { font-size: 15px; font-weight: 600; color: var(--text-main); margin-bottom: 6px; }
 .empty-state .es-sub   { font-size: 12.5px; }
 
-/*RESPONSIVE*/
+/* ===== RESPONSIVE ===== */
 @media (max-width: 900px) { .charts-row, .detail-panel, .report-grid { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { #sidebar { transform: translateX(-100%); } #sidebar.open { transform: translateX(0); } #main { margin-left: 0; } .form-row, .form-row-3 { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
-<!--SIDEBAR-->
+<!-- ===== SIDEBAR ===== -->
 <nav id="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-mark" style="flex-direction:column;align-items:center;gap:8px;padding:4px 0;">
-      <img src="logo/castlestechlogo.png" alt="Castles Technology"
-           style="width:54px;height:54px;object-fit:contain;flex-shrink:0;"
-           onerror="this.style.display='none'">
-      <div style="text-align:center;">
-        <div class="logo-text" style="font-size:17px;letter-spacing:0.02em;">IssueTracker</div>
-        <div class="logo-sub" style="margin-top:2px;">Castles Technology Enterprise v2.0</div>
-      </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <img src="Castles_Technology_logo.png" alt="Castles Technology"
+           style="width:220px;object-fit:contain;"
+           onerror="this.style.display='none'" />
+      <div class="logo-sub" style="text-align:center;">CASTLES TECHNOLOGY ENTERPRISE V2.0</div>
     </div>
   </div>
   <div class="sidebar-nav">
@@ -323,14 +328,14 @@ select.form-control option { background: #ffffff; color: #333333; }
     <div class="nav-section-label">Management</div>
     <a class="nav-item" data-view="new-issue"><span class="icon">🐛</span> New Issue</a>
     <a class="nav-item" data-view="user-story"><span class="icon">📖</span> User Story</a>
-    <a class="nav-item" data-view="import"><span class="icon">📥</span> Import CSV</a>
+    <a class="nav-item" data-view="import"><span class="icon">📥</span> Import XLSX</a>
     <div class="nav-section-label">Analytics</div>
     <a class="nav-item" data-view="reports"><span class="icon">📋</span> Reports</a>
   </div>
   <div class="sidebar-footer">API: <span style="color:rgba(255,255,255,0.5)">localhost/issuetracker</span></div>
 </nav>
 
-<!--MAIN-->
+<!-- ===== MAIN ===== -->
 <div id="main">
   <div id="topbar">
     <div class="topbar-title" id="topbar-title">Dashboard</div>
@@ -344,7 +349,7 @@ select.form-control option { background: #ffffff; color: #333333; }
 
   <div id="content">
 
-    <!--DASHBOARD-->
+    <!-- ===== DASHBOARD ===== -->
     <div class="view active" id="view-dashboard">
       <div class="stat-row" id="stat-row">
         <div class="stat-card c-total"><div class="stat-label">Total</div><div class="stat-value" id="s-total">–</div><div class="stat-icon">📦</div></div>
@@ -381,7 +386,7 @@ select.form-control option { background: #ffffff; color: #333333; }
       </div>
     </div>
 
-    <!--ALL ISSUES-->
+    <!-- ===== ALL ISSUES ===== -->
     <div class="view" id="view-issues">
       <div class="card">
         <div class="card-header">
@@ -390,28 +395,30 @@ select.form-control option { background: #ffffff; color: #333333; }
           <div class="filter-bar">
             <select class="filter-select" id="filter-state" onchange="loadIssues()">
               <option value="">All States</option>
+              <optgroup label="Issue State">
+                <option>New</option><option>Bug</option><option>Open</option>
+              </optgroup>
+              <optgroup label="Issue Status">
+                <option>In Progress</option><option>Fixed</option><option>Resolved</option>
+              </optgroup>
               <optgroup label="User Story States">
                 <option>Draft</option><option>For Review</option><option>Approved</option>
                 <option>In Development</option><option>For Testing</option><option>QA Failed</option>
                 <option>For UAT</option><option>Ready for Deployment</option><option>Deployed</option><option>Closed</option>
-              </optgroup>
-              <optgroup label="Legacy">
-                <option>New</option><option>Bug</option><option>Open</option><option>In Progress</option><option>Resolved</option>
               </optgroup>
             </select>
             <select class="filter-select" id="filter-priority" onchange="loadIssues()">
               <option value="">All Priorities</option>
               <option>1-Urgent</option><option>2-Critical</option><option>3-High</option>
               <option>4-Medium</option><option>5-Low</option>
-              <option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
             </select>
-            <button class="btn btn-ghost btn-sm" onclick="exportIssues()">⬇ Export CSV</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportIssues()">⬇ Export XLSX</button>
           </div>
         </div>
         <div class="card-body" style="padding:0">
           <div class="table-wrapper">
             <table>
-              <thead><tr><th>#</th><th>Dashboard</th><th>Module</th><th>Description</th><th>State</th><th>Priority</th><th>SP</th><th>Sprint</th><th>Assigned To</th><th>Date</th><th></th></tr></thead>
+              <thead><tr><th>#</th><th>Dashboard</th><th>Module</th><th>Description</th><th>State</th><th>Status</th><th>Priority</th><th>SP</th><th>Sprint</th><th>Assigned To</th><th>Date</th><th></th></tr></thead>
               <tbody id="issues-body"><tr><td colspan="11"><div class="empty-state"><div class="loader"></div></div></td></tr></tbody>
             </table>
           </div>
@@ -419,7 +426,7 @@ select.form-control option { background: #ffffff; color: #333333; }
       </div>
     </div>
 
-    <!--NEW ISSUE-->
+    <!-- ===== NEW ISSUE ===== -->
     <div class="view" id="view-new-issue">
       <div class="card">
         <div class="card-header"><div class="card-title">🐛 Log New Issue</div></div>
@@ -462,8 +469,6 @@ select.form-control option { background: #ffffff; color: #333333; }
                   <option value="New" selected>New</option>
                   <option value="Bug">Bug</option>
                   <option value="Open">Open</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Resolved">Resolved</option>
                 </select>
               </div>
               <div class="form-group">
@@ -507,7 +512,7 @@ select.form-control option { background: #ffffff; color: #333333; }
       </div>
     </div>
 
-    <!--USER STORY-->
+    <!-- ===== USER STORY ===== -->
     <div class="view" id="view-user-story">
       <div class="card">
         <div class="card-header"><div class="card-title">📖 Create User Story</div></div>
@@ -678,17 +683,17 @@ select.form-control option { background: #ffffff; color: #333333; }
       </div>
     </div>
 
-    <!--IMPORT-->
+    <!-- ===== IMPORT ===== -->
     <div class="view" id="view-import">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
         <div class="card">
-          <div class="card-header"><div class="card-title">Import CSV File</div></div>
+          <div class="card-header"><div class="card-title">Import XLSX File</div></div>
           <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
             <div class="drop-zone" id="drop-zone" onclick="document.getElementById('csv-file').click()">
               <div class="dz-icon">📂</div>
-              <div class="dz-title">Drop CSV file here</div>
-              <div class="dz-sub">or click to browse — Max 10MB</div>
-              <input type="file" id="csv-file" accept=".csv" style="display:none" onchange="handleFileSelect(event)" />
+              <div class="dz-title">Drop XLSX file here</div>
+              <div class="dz-sub">or click to browse — .xlsx / .xls, Max 10MB</div>
+              <input type="file" id="csv-file" accept=".xlsx,.xls" style="display:none" onchange="handleFileSelect(event)" />
             </div>
             <div id="file-preview" style="display:none;">
               <div style="background:rgba(46,158,107,0.1);border:1px solid rgba(46,158,107,0.3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:10px;">
@@ -711,24 +716,24 @@ select.form-control option { background: #ffffff; color: #333333; }
           </div>
         </div>
         <div class="card">
-          <div class="card-header"><div class="card-title">CSV Format Guide</div></div>
+          <div class="card-header"><div class="card-title">XLSX Format Guide</div></div>
           <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
-            <p style="font-size:12.5px;color:var(--text-dim);">Your CSV must include these columns in order:</p>
+            <p style="font-size:12.5px;color:var(--text-dim);">Your XLSX file must include these columns in order:</p>
             <div style="background:#f5f5f5;border-radius:8px;padding:14px;font-family:'Roboto Mono',monospace;font-size:11px;color:#333;line-height:2;overflow-x:auto;">
-              ID, Description, State, Date Identified, Issued by, Priority
+              ID | Dashboard | Module | Description | State | Status | Priority | Story Points | Sprint | Area Path | Issued By | Assigned To | Date Identified
             </div>
-            <p style="font-size:12.5px;color:var(--text-dim);">Description supports pipe-separated format:</p>
+            <p style="font-size:12.5px;color:var(--text-dim);">The first row is treated as a header and skipped automatically.</p>
             <div style="background:#f5f5f5;border-radius:8px;padding:14px;font-family:'Roboto Mono',monospace;font-size:11px;color:#cc0000;line-height:2;overflow-x:auto;">
-              MSP Dashboard | Inventory | Issue description here
+              e.g. MCC | Inventory | Login button not responding
             </div>
-            <p style="font-size:11.5px;color:var(--text-dim);">Valid states: <span style="color:#cc0000">Draft, For Review, Approved, In Development, For Testing, QA Failed, For UAT, Ready for Deployment, Deployed, Closed, New, Bug, Open, In Progress, Resolved</span></p>
+            <p style="font-size:11.5px;color:var(--text-dim);">Valid states: <span style="color:#cc0000">New, Bug, Open</span> &nbsp;·&nbsp; Valid statuses: <span style="color:#cc0000">In Progress, Fixed, Resolved</span></p>
             <p style="font-size:11.5px;color:var(--text-dim);">Valid priorities: <span style="color:#cc0000">1-Urgent, 2-Critical, 3-High, 4-Medium, 5-Low</span></p>
           </div>
         </div>
       </div>
     </div>
 
-    <!--REPORTS-->
+    <!-- ===== REPORTS ===== -->
     <div class="view" id="view-reports">
       <div class="card">
         <div class="card-header"><div class="card-title">Generate Report</div></div>
@@ -781,7 +786,7 @@ select.form-control option { background: #ffffff; color: #333333; }
   </div>
 </div>
 
-<!--ISSUE DETAIL MODAL-->
+<!-- ===== ISSUE DETAIL MODAL ===== -->
 <div class="modal-overlay" id="issue-detail-modal">
   <div class="modal" style="width:750px;">
     <div class="modal-header">
@@ -799,7 +804,7 @@ select.form-control option { background: #ffffff; color: #333333; }
   </div>
 </div>
 
-<!--EDIT MODAL-->
+<!-- ===== EDIT MODAL ===== -->
 <div class="modal-overlay" id="edit-issue-modal">
   <div class="modal">
     <div class="modal-header">
@@ -809,23 +814,17 @@ select.form-control option { background: #ffffff; color: #333333; }
     <div class="modal-body">
       <div class="form-row">
         <div class="form-group">
-          <label>State</label>
+          <label>Status <span style="font-size:9px;color:#aaa;font-weight:400;text-transform:none;">— Progress of this issue</span></label>
           <select class="form-control" id="edit-state">
-            <optgroup label="User Story States">
-              <option>Draft</option><option>For Review</option><option>Approved</option>
-              <option>In Development</option><option>For Testing</option><option>QA Failed</option>
-              <option>For UAT</option><option>Ready for Deployment</option><option>Deployed</option><option>Closed</option>
-            </optgroup>
-            <optgroup label="Legacy">
-              <option>New</option><option>Bug</option><option>Open</option><option>In Progress</option><option>Resolved</option>
-            </optgroup>
+            <option value="In Progress">In Progress — Being worked on</option>
+            <option value="Fixed">Fixed — Dev complete, pending verification</option>
+            <option value="Resolved">Resolved — Confirmed fixed and closed</option>
           </select>
         </div>
         <div class="form-group">
           <label>Priority</label>
           <select class="form-control" id="edit-priority">
             <option>1-Urgent</option><option>2-Critical</option><option>3-High</option><option>4-Medium</option><option>5-Low</option>
-            <option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
           </select>
         </div>
       </div>
@@ -890,23 +889,23 @@ select.form-control option { background: #ffffff; color: #333333; }
 <div id="toast-container"></div>
 
 <script>
-// 
+// ============================================================
 // CONFIG
-// 
+// ============================================================
 const API = 'http://localhost/issuetracker/api';
 
-// 
+// ============================================================
 // STATE
-// 
+// ============================================================
 let currentIssueId  = null;
 let currentReportId = null;
 let allUsers        = [];
 let charts          = {};
 let searchTimeout   = null;
 
-// 
+// ============================================================
 // INIT
-// 
+// ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   loadUsers();
   loadDashboard();
@@ -934,15 +933,15 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// 
+// ============================================================
 // NAVIGATION
-// 
+// ============================================================
 function navigate(view) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById(`view-${view}`)?.classList.add('active');
   document.querySelector(`.nav-item[data-view="${view}"]`)?.classList.add('active');
-  const titles = { dashboard:'Dashboard', issues:'All Issues', 'new-issue':'Log New Issue', 'user-story':'Create User Story', import:'Import CSV', reports:'Reports' };
+  const titles = { dashboard:'Dashboard', issues:'All Issues', 'new-issue':'Log New Issue', 'user-story':'Create User Story', import:'Import XLSX', reports:'Reports' };
   document.getElementById('topbar-title').textContent = titles[view] || view;
   // #2 — only show "+ New Issue" button on All Issues tab
   const newBtn = document.getElementById('topbar-new-btn');
@@ -953,9 +952,9 @@ function navigate(view) {
   if (view === 'user-story')  setUserStoryDate();
 }
 
-// 
+// ============================================================
 // API HELPER
-// 
+// ============================================================
 async function apiFetch(url, opts = {}) {
   try {
     const res = await fetch(`${API}${url}`, {
@@ -970,9 +969,9 @@ async function apiFetch(url, opts = {}) {
   }
 }
 
-// 
+// ============================================================
 // USERS
-// 
+// ============================================================
 async function loadUsers() {
   try {
     const res = await apiFetch('/get_users.php');
@@ -1023,9 +1022,9 @@ function populateUserSelects() {
   }
 }
 
-// 
+// ============================================================
 // DASHBOARD
-// 
+// ============================================================
 async function loadDashboard() {
   try {
     const res = await apiFetch('/get_stats.php');
@@ -1087,9 +1086,9 @@ function renderDashboardChart(data) {
   });
 }
 
-// 
+// ============================================================
 // RECENT ISSUES
-// 
+// ============================================================
 async function loadRecentIssues() {
   try {
     const res = await apiFetch('/get_issues.php');
@@ -1113,9 +1112,9 @@ function recentIssueRow(i) {
   </tr>`;
 }
 
-// 
+// ============================================================
 // ALL ISSUES
-// 
+// ============================================================
 async function loadIssues() {
   const state    = document.getElementById('filter-state')?.value    || '';
   const priority = document.getElementById('filter-priority')?.value || '';
@@ -1129,7 +1128,7 @@ async function loadIssues() {
     const res = await apiFetch(`/get_issues.php?${params}`);
     const issues = res.data || [];
     const tbody = document.getElementById('issues-body');
-    tbody.innerHTML = issues.length ? issues.map(i => allIssueRow(i)).join('') : emptyRow(11,'No issues found. Try adjusting filters.');
+    tbody.innerHTML = issues.length ? issues.map(i => allIssueRow(i)).join('') : emptyRow(12,'No issues found. Try adjusting filters.');
   } catch { }
 }
 
@@ -1140,6 +1139,7 @@ function allIssueRow(i) {
     <td style="font-size:12px;">${escHtml(i.module||'—')}</td>
     <td class="td-desc">${escHtml(i.title || i.description)}</td>
     <td>${stateBadge(i.state)}</td>
+    <td>${statusBadge(i.status || (['New','Bug','Open'].includes(i.state) ? 'In Progress' : null))}</td>
     <td>${priBadge(i.priority)}</td>
     <td>${i.story_points ? `<span class="sp-badge">${i.story_points}</span>` : '—'}</td>
     <td style="font-size:11px;color:#888;">${escHtml(i.iteration_path||'—')}</td>
@@ -1149,9 +1149,9 @@ function allIssueRow(i) {
   </tr>`;
 }
 
-// 
+// ============================================================
 // ISSUE DETAIL
-// 
+// ============================================================
 async function viewIssue(id) {
   currentIssueId = id;
   openModal('issue-detail-modal');
@@ -1175,6 +1175,7 @@ async function viewIssue(id) {
           <p style="font-size:12.5px;color:#666;margin-bottom:14px;line-height:1.5;">${escHtml(issue.description)}</p>
           <div class="detail-meta">
             <div class="meta-row"><span class="meta-key">State</span><span class="meta-val">${stateBadge(issue.state)}</span></div>
+            <div class="meta-row"><span class="meta-key">Status</span><span class="meta-val">${statusBadge(issue.status || (["New","Bug","Open"].includes(issue.state) ? "In Progress" : null))}</span></div>
             <div class="meta-row"><span class="meta-key">Priority</span><span class="meta-val">${priBadge(issue.priority)}</span></div>
             <div class="meta-row"><span class="meta-key">Story Points</span><span class="meta-val">${issue.storyPoints ? `<span class="sp-badge">${issue.storyPoints}</span> <span style="font-size:11px;color:#888;">${spHours(issue.storyPoints)}</span>` : '—'}</span></div>
             <div class="meta-row"><span class="meta-key">Dashboard</span><span class="meta-val">${escHtml(issue.dashboard||'—')}</span></div>
@@ -1212,7 +1213,7 @@ async function viewIssue(id) {
                       onmouseover="this.style.color='#cc0000'" onmouseout="this.style.color='#ccc'">✕</button>
                   </div>
                   <div class="comment-text">${escHtml(c.comment || c.commentText || "")}</div>
-                </div>`;}).join('')
+                </div>`}).join('')
               : `<div style="color:var(--text-dim);font-size:12px;padding:8px 0;">No comments yet.</div>`
             }
           </div>
@@ -1265,9 +1266,9 @@ function attachmentHTML(a, issueId) {
   </div>`;
 }
 
-// 
+// ============================================================
 // COMMENTS
-// 
+// ============================================================
 async function addComment() {
   const userSel = document.getElementById('comment-user-select');
   const textEl  = document.getElementById('comment-text');
@@ -1313,11 +1314,12 @@ async function deleteComment(commentId) {
   } catch { toast('Failed to delete comment.', 'error'); }
 }
 
-// 
+// ============================================================
 // EDIT
-// 
+// ============================================================
 function openEditModal(issue) {
-  document.getElementById('edit-state').value              = issue.state;
+  // Status field (edit-state) shows progress status, defaulting to In Progress for new issues
+  document.getElementById('edit-state').value = issue.status || issue.state || 'In Progress';
   document.getElementById('edit-priority').value           = issue.priority;
   document.getElementById('edit-story-points').value       = issue.storyPoints || issue.story_points || '';
   document.getElementById('edit-iteration-path').value     = issue.iterationPath || issue.iteration_path || '';
@@ -1329,8 +1331,9 @@ function openEditModal(issue) {
 }
 
 async function saveEdit() {
+  const statusVal = document.getElementById('edit-state').value;
   const dto = {
-    state:               document.getElementById('edit-state').value,
+    status:              statusVal,
     priority:            document.getElementById('edit-priority').value,
     storyPoints:         document.getElementById('edit-story-points').value || null,
     assignedTo:          document.getElementById('edit-assigned-to').value  || null,
@@ -1354,9 +1357,9 @@ async function saveEdit() {
   } catch { toast('Update failed.', 'error'); }
 }
 
-// 
+// ============================================================
 // DELETE
-// 
+// ============================================================
 async function deleteIssue(id) {
   if (!confirm('Delete this issue? This cannot be undone.')) return;
   try {
@@ -1373,9 +1376,9 @@ async function deleteIssue(id) {
   } catch { toast('Delete failed.', 'error'); }
 }
 
-// 
+// ============================================================
 // NEW ISSUE
-// 
+// ============================================================
 async function submitNewIssue(e) {
   e.preventDefault();
   const btn = document.getElementById('ni-submit-btn');
@@ -1412,9 +1415,9 @@ async function submitNewIssue(e) {
   }
 }
 
-// 
+// ============================================================
 // USER STORY
-// 
+// ============================================================
 async function submitUserStory(e) {
   e.preventDefault();
   const btn = document.getElementById('us-submit-btn');
@@ -1466,9 +1469,9 @@ function setTodayDate() {
   if (d) d.value = new Date().toISOString().split('T')[0];
 }
 
-// 
-// IMPORT CSV — FIX: points to import_csv.php
-// 
+// ============================================================
+// IMPORT XLSX — uses xlsx-js-style CDN, no PHP required
+// ============================================================
 let selectedFile = null;
 
 function handleFileSelect(e) { setFile(e.target.files[0]); }
@@ -1485,46 +1488,140 @@ function clearFile() {
 }
 
 async function doImport() {
-  if (!selectedFile) { toast('Please select a CSV file.', 'error'); return; }
+  if (!selectedFile) { toast('Please select an XLSX file.', 'error'); return; }
   const userId = document.getElementById('import-user').value;
   const btn    = document.getElementById('import-btn');
+  const result = document.getElementById('import-result');
   btn.disabled = true;
-  btn.innerHTML = '<div class="loader"></div> Importing…';
-
-  const form = new FormData();
-  form.append('file', selectedFile);
-  if (userId) form.append('importedBy', userId);
+  btn.innerHTML = '<div class="loader"></div> Reading file…';
 
   try {
-    // FIX: points to the new import_csv.php endpoint
-    const res  = await fetch(`${API}/import_csv.php`, { method: 'POST', body: form });
-    const data = await res.json();
-    const result = document.getElementById('import-result');
-    result.style.display = '';
+    // ── Read XLSX in browser using xlsx-js-style ──────────────
+    const arrayBuffer = await selectedFile.arrayBuffer();
+    const workbook    = XLSX.read(arrayBuffer, { type: 'array', cellDates: true });
+    const sheet       = workbook.Sheets[workbook.SheetNames[0]];
+    const rows        = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
 
-    if (data.success) {
+    if (rows.length < 2) {
+      toast('File is empty or has no data rows.', 'error');
+      btn.disabled = false; btn.innerHTML = '📥 Import File';
+      return;
+    }
+
+    // Skip header row
+    const dataRows = rows.slice(1);
+
+    const validStates     = ['New','Bug','Open','In Progress','Resolved',
+                             'Draft','For Review','Approved','In Development',
+                             'For Testing','QA Failed','For UAT',
+                             'Ready for Deployment','Deployed','Closed'];
+    const validPriorities = ['1-Urgent','2-Critical','3-High','4-Medium','5-Low'];
+
+    let importedCount = 0;
+    const errors = [];
+
+    btn.innerHTML = '<div class="loader"></div> Importing…';
+
+    for (let i = 0; i < dataRows.length; i++) {
+      const row    = dataRows[i];
+      const rowNum = i + 2;
+
+      // Columns: 0=ID(skip) 1=Dashboard 2=Module 3=Description
+      //          4=State 5=Status 6=Priority 7=SP 8=Sprint
+      //          9=AreaPath 10=IssuedBy(name) 11=AssignedTo(name) 12=DateIdentified
+      let dashboard   = String(row[1] || '').trim() || null;
+      let module      = String(row[2] || '').trim() || null;
+      let description = String(row[3] || '').trim();
+
+      // Fallback: pipe-separated description in col 3
+      if (!description && row[1]) description = String(row[1]).trim();
+      if (description.includes('|')) {
+        const parts = description.split('|').map(p => p.trim());
+        if (parts.length >= 3) {
+          dashboard   = parts[0];
+          module      = parts[1];
+          description = parts.slice(2).join(' | ');
+        } else if (parts.length === 2) {
+          dashboard   = parts[0];
+          description = parts[1];
+        }
+      }
+
+      if (!description) { errors.push(`Row ${rowNum}: Empty description, skipped.`); continue; }
+
+      const rawState = String(row[4] || '').trim();
+      const state    = validStates.includes(rawState) ? rawState : 'New';
+
+      const rawStatus = String(row[5] || '').trim();
+      const status    = ['In Progress','Fixed','Resolved'].includes(rawStatus) ? rawStatus : 'In Progress';
+
+      const rawPri  = String(row[6] || '').trim();
+      const priority = validPriorities.includes(rawPri) ? rawPri : '4-Medium';
+
+      const storyPoints    = row[7] ? String(row[7]).trim() : null;
+      const iterationPath  = row[8] ? String(row[8]).trim() : null;
+      const areaPath       = row[9] ? String(row[9]).trim() : null;
+
+      // Date — handle JS Date object (cellDates:true) or string
+      let dateIdentified = new Date().toISOString().split('T')[0];
+      const rawDate = row[12] || row[3];
+      if (rawDate instanceof Date) {
+        dateIdentified = rawDate.toISOString().split('T')[0];
+      } else if (rawDate) {
+        const parsed = new Date(rawDate);
+        if (!isNaN(parsed)) dateIdentified = parsed.toISOString().split('T')[0];
+      }
+
+      // Match issued_by name to user ID
+      const issuedByName = String(row[10] || '').trim().toLowerCase();
+      const issuedByUser = allUsers.find(u => u.name.toLowerCase() === issuedByName);
+      const issuedBy     = issuedByUser ? issuedByUser.id : (userId || null);
+
+      const assignedByName = String(row[11] || '').trim().toLowerCase();
+      const assignedUser   = allUsers.find(u => u.name.toLowerCase() === assignedByName);
+      const assignedTo     = assignedUser ? assignedUser.id : null;
+
+      try {
+        const res = await apiFetch('/create_issue.php', {
+          method: 'POST',
+          body: JSON.stringify({
+            dashboard, module, description, state, status, priority,
+            storyPoints, iterationPath, areaPath,
+            issuedBy, assignedTo, dateIdentified,
+            source: 'XLSX Import'
+          })
+        });
+        if (res.success) importedCount++;
+        else errors.push(`Row ${rowNum}: ${res.message || 'Insert failed.'}`);
+      } catch (e) {
+        errors.push(`Row ${rowNum}: Network error.`);
+      }
+    }
+
+    result.style.display = '';
+    if (importedCount > 0) {
       result.innerHTML = `<div style="background:rgba(46,158,107,0.1);border:1px solid rgba(46,158,107,0.3);border-radius:8px;padding:14px 18px;">
-        <div style="font-weight:700;color:var(--success);margin-bottom:6px;">✅ ${escHtml(data.message)}</div>
-        ${data.data?.errors?.length ? `<div style="font-size:11px;color:var(--text-dim);">${data.data.errors.slice(0,5).map(e => `<div>⚠ ${escHtml(e)}</div>`).join('')}</div>` : ''}
+        <div style="font-weight:700;color:var(--success);margin-bottom:6px;">✅ ${importedCount} issue(s) imported successfully.</div>
+        ${errors.length ? `<div style="font-size:11px;color:var(--text-dim);margin-top:4px;">${errors.slice(0,5).map(e => `<div>⚠ ${escHtml(e)}</div>`).join('')}</div>` : ''}
       </div>`;
-      toast(data.message, 'success');
+      toast(`${importedCount} issue(s) imported!`, 'success');
       clearFile();
       loadDashboard();
     } else {
-      result.innerHTML = `<div style="background:rgba(217,79,79,0.1);border:1px solid rgba(217,79,79,0.3);border-radius:8px;padding:14px 18px;color:var(--danger);">❌ ${escHtml(data.message || 'Import failed.')}</div>`;
+      result.innerHTML = `<div style="background:rgba(217,79,79,0.1);border:1px solid rgba(217,79,79,0.3);border-radius:8px;padding:14px 18px;color:var(--danger);">❌ No issues imported. ${errors.length ? errors[0] : ''}</div>`;
       toast('Import failed.', 'error');
     }
-  } catch {
-    toast('Could not connect to API.', 'error');
+  } catch (err) {
+    toast('Could not read file: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
     btn.innerHTML = '📥 Import File';
   }
 }
 
-// 
+// ============================================================
 // REPORTS
-// 
+// ============================================================
 async function generateReport() {
   const dto = {
     dateRange:    document.getElementById('rpt-date-range').value,
@@ -1569,7 +1666,7 @@ async function loadReportHistory() {
   } catch { }
 }
 
-function exportIssues() {
+async function exportIssues() {
   const state    = document.getElementById('filter-state')?.value    || '';
   const priority = document.getElementById('filter-priority')?.value || '';
   const search   = document.getElementById('global-search')?.value   || '';
@@ -1577,12 +1674,117 @@ function exportIssues() {
   if (state)    params.set('state', state);
   if (priority) params.set('priority', priority);
   if (search)   params.set('search', search);
-  window.open(`${API}/export_issues_excel.php?${params}`, '_blank');
+
+  toast('Preparing XLSX export…', 'info');
+
+  try {
+    const res    = await apiFetch(`/get_issues.php?${params}`);
+    const issues = res.data || [];
+
+    if (!issues.length) { toast('No issues to export.', 'error'); return; }
+
+    // ── Header row ─────────────────────────────────────────────
+    const headers = [
+      'ID','Dashboard','Module','Description','State','Status',
+      'Priority','Story Points','Sprint','Area Path',
+      'Issued By','Assigned To','Date Identified','Source'
+    ];
+
+    // Header style — red fill, white bold text, centered
+    const hStyle = {
+      font:      { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 },
+      fill:      { fgColor: { rgb: 'CC0000' } },
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: false },
+      border: {
+        top:    { style: 'thin', color: { rgb: 'FFFFFF' } },
+        bottom: { style: 'thin', color: { rgb: 'FFFFFF' } },
+        left:   { style: 'thin', color: { rgb: 'FFFFFF' } },
+        right:  { style: 'thin', color: { rgb: 'FFFFFF' } },
+      }
+    };
+
+    // Even row style — light red tint
+    const evenStyle = {
+      fill:      { fgColor: { rgb: 'FFF5F5' } },
+      alignment: { vertical: 'center' },
+      border: {
+        top:    { style: 'thin', color: { rgb: 'DDDDDD' } },
+        bottom: { style: 'thin', color: { rgb: 'DDDDDD' } },
+        left:   { style: 'thin', color: { rgb: 'DDDDDD' } },
+        right:  { style: 'thin', color: { rgb: 'DDDDDD' } },
+      }
+    };
+
+    // Odd row style — white
+    const oddStyle = {
+      fill:      { fgColor: { rgb: 'FFFFFF' } },
+      alignment: { vertical: 'center' },
+      border: {
+        top:    { style: 'thin', color: { rgb: 'DDDDDD' } },
+        bottom: { style: 'thin', color: { rgb: 'DDDDDD' } },
+        left:   { style: 'thin', color: { rgb: 'DDDDDD' } },
+        right:  { style: 'thin', color: { rgb: 'DDDDDD' } },
+      }
+    };
+
+    // ── Build worksheet data ────────────────────────────────────
+    const wsData = [headers];
+    issues.forEach(i => {
+      wsData.push([
+        i.id,
+        i.dashboard         || '',
+        i.module            || '',
+        i.title || i.description || '',
+        i.state             || '',
+        i.status || (['New','Bug','Open'].includes(i.state) ? 'In Progress' : ''),
+        i.priority          || '',
+        i.story_points      || '',
+        i.iteration_path    || '',
+        i.area_path         || '',
+        i.issued_by_name    || '',
+        i.assigned_to_name  || '',
+        i.date_identified   || '',
+        i.source            || 'Manual',
+      ]);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    // ── Apply styles ────────────────────────────────────────────
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let R = range.s.r; R <= range.e.r; R++) {
+      for (let C = range.s.c; C <= range.e.c; C++) {
+        const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
+        if (!ws[cellRef]) ws[cellRef] = { v: '', t: 's' };
+        ws[cellRef].s = R === 0 ? hStyle : (R % 2 === 0 ? evenStyle : oddStyle);
+      }
+    }
+
+    // ── Column widths ───────────────────────────────────────────
+    ws['!cols'] = [
+      {wch:6},{wch:12},{wch:12},{wch:45},{wch:14},{wch:14},
+      {wch:12},{wch:10},{wch:12},{wch:14},{wch:16},{wch:16},{wch:16},{wch:12}
+    ];
+
+    // Freeze header row
+    ws['!freeze'] = { xSplit: 0, ySplit: 1 };
+
+    // ── Build workbook & download ───────────────────────────────
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Issues');
+
+    const filename = `IssueTracker_Export_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, filename);
+    toast(`Exported ${issues.length} issues to ${filename}`, 'success');
+
+  } catch (err) {
+    toast('Export failed: ' + err.message, 'error');
+  }
 }
 
-// 
+// ============================================================
 // ATTACHMENTS
-// 
+// ============================================================
 async function uploadAttachment(issueId) {
   const input = document.getElementById('attachment-file-input');
   const file  = input.files[0];
@@ -1642,18 +1844,18 @@ async function deleteAttachment(attachmentId, issueId) {
   } catch { toast('Failed to remove attachment.', 'error'); }
 }
 
-// 
+// ============================================================
 // MODALS
-// 
+// ============================================================
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
 });
 
-// 
+// ============================================================
 // TOAST
-// 
+// ============================================================
 function toast(message, type = 'info') {
   const icons = { success:'✅', error:'❌', info:'ℹ' };
   const el = document.createElement('div');
@@ -1663,9 +1865,9 @@ function toast(message, type = 'info') {
   setTimeout(() => el.remove(), 3800);
 }
 
-// 
+// ============================================================
 // HELPERS
-// 
+// ============================================================
 function stateBadge(state) {
   const map = {
     // PDF states
@@ -1676,6 +1878,18 @@ function stateBadge(state) {
     'New':'badge-new','Bug':'badge-bug','Open':'badge-open','In Progress':'badge-inprogress','Resolved':'badge-resolved'
   };
   return `<span class="badge ${map[state]||'badge-new'}">${escHtml(state)}</span>`;
+}
+
+function statusBadge(status) {
+  if (!status || status === 'New' || status === 'Bug' || status === 'Open') {
+    return '<span class="badge badge-nostatus">—</span>';
+  }
+  const map = {
+    'In Progress': 'badge-inprogress-status',
+    'Fixed':       'badge-fixed',
+    'Resolved':    'badge-resolved-status',
+  };
+  return `<span class="badge ${map[status] || 'badge-nostatus'}">${escHtml(status)}</span>`;
 }
 
 function priBadge(p) {
