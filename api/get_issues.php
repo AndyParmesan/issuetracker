@@ -1,4 +1,6 @@
 <?php
+error_reporting(0);
+ini_set('display_errors', 0);
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
@@ -6,14 +8,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit();
 require_once '../config/database.php';
 
 try {
-    $state    = $_GET['state']    ?? '';
-    $priority = $_GET['priority'] ?? '';
-    $search   = $_GET['search']   ?? '';
+    $state      = $_GET['state']      ?? '';
+    $priority   = $_GET['priority']   ?? '';
+    $search     = $_GET['search']     ?? '';
+    $particular = $_GET['particular'] ?? '';
 
     $sql = "SELECT 
                 i.id,
                 i.title,
                 i.dashboard,
+                i.particular_id,
+                p.name          AS particular_name,
                 i.module,
                 i.description,
                 i.state,
@@ -27,11 +32,14 @@ try {
                 i.date_identified,
                 i.created_at,
                 i.updated_at,
+                i.issued_by,
+                i.assigned_to,
                 u1.name AS issued_by_name,
                 u2.name AS assigned_to_name
             FROM issues i
-            LEFT JOIN users u1 ON i.issued_by   = u1.id
-            LEFT JOIN users u2 ON i.assigned_to = u2.id
+            LEFT JOIN users       u1 ON i.issued_by      = u1.id
+            LEFT JOIN users       u2 ON i.assigned_to    = u2.id
+            LEFT JOIN particulars p  ON i.particular_id  = p.particular_id
             WHERE 1=1";
 
     $params = [];
@@ -44,8 +52,12 @@ try {
         $sql .= " AND i.priority = :priority";
         $params[':priority'] = $priority;
     }
+    if (!empty($particular)) {
+        $sql .= " AND i.particular_id = :particular";
+        $params[':particular'] = $particular;
+    }
     if (!empty($search)) {
-        $sql .= " AND (i.description LIKE :search OR i.title LIKE :search OR i.dashboard LIKE :search OR i.module LIKE :search)";
+        $sql .= " AND (i.description LIKE :search OR i.title LIKE :search OR i.dashboard LIKE :search OR i.module LIKE :search OR p.name LIKE :search)";
         $params[':search'] = "%$search%";
     }
 

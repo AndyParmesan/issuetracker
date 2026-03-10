@@ -1,4 +1,6 @@
 <?php
+error_reporting(0);
+ini_set('display_errors', 0);
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
@@ -34,6 +36,7 @@ try {
     if (isset($data['description']))        { $fields[] = "description = :description";               $params[':description']        = $data['description']; }
     if (isset($data['dashboard']))          { $fields[] = "dashboard = :dashboard";                   $params[':dashboard']          = $data['dashboard']; }
     if (isset($data['module']))             { $fields[] = "module = :module";                         $params[':module']             = $data['module']; }
+    if (isset($data['particularId']))       { $fields[] = "particular_id = :particularId";              $params[':particularId']       = $data['particularId'] ?: null; }
 
     if (empty($fields)) {
         echo json_encode(["success" => false, "message" => "No fields to update."]);

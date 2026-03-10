@@ -332,11 +332,11 @@ select.form-control option { background: #ffffff; color: #333333; }
     <a class="nav-item active" data-view="dashboard"><span class="icon">📊</span> Dashboard</a>
     <a class="nav-item" data-view="issues"><span class="icon">🔎</span> All Issues <span class="nav-badge" id="badge-open">–</span></a>
     <div class="nav-section-label">Management</div>
-    <a class="nav-item" data-view="new-issue"><span class="icon">🐛</span> New Issue</a>
-    <a class="nav-item" data-view="user-story"><span class="icon">📖</span> User Story</a>
-    <a class="nav-item" data-view="import"><span class="icon">📥</span> Import XLSX</a>
-    <div class="nav-section-label">Analytics</div>
-    <a class="nav-item" data-view="reports"><span class="icon">📋</span> Reports</a>
+    <a class="nav-item" id="nav-new-issue" data-view="new-issue"><span class="icon">🐛</span> New Issue</a>
+    <a class="nav-item" id="nav-user-story" data-view="user-story"><span class="icon">📖</span> User Story</a>
+    <a class="nav-item" id="nav-import" data-view="import"><span class="icon">📥</span> Import XLSX</a>
+    <div class="nav-section-label" id="nav-analytics-label">Analytics</div>
+    <a class="nav-item" id="nav-reports" data-view="reports"><span class="icon">📋</span> Reports</a>
     <a class="nav-item" id="nav-maintenance" onclick="openMaintenanceModal()" style="cursor:pointer;display:none;"><span class="icon">⚙️</span> Maintenance</a>
   </div>
   <div class="sidebar-footer">API: <span style="color:rgba(255,255,255,0.5)">issuetracker/api</span></div>
@@ -415,6 +415,9 @@ select.form-control option { background: #ffffff; color: #333333; }
           <div class="card-title">All Issues</div>
           <div class="sep"></div>
           <div class="filter-bar">
+            <select class="filter-select" id="filter-particular" onchange="loadIssues()">
+              <option value="">All Particulars</option>
+            </select>
             <select class="filter-select" id="filter-state" onchange="loadIssues()">
               <option value="">All States</option>
               <optgroup label="Issue State">
@@ -434,13 +437,14 @@ select.form-control option { background: #ffffff; color: #333333; }
               <option>1-Urgent</option><option>2-Critical</option><option>3-High</option>
               <option>4-Medium</option><option>5-Low</option>
             </select>
+            <button id="filter-mine-btn" class="btn btn-ghost btn-sm" onclick="toggleMineFilter()" style="white-space:nowrap;">👤 My Issues</button>
             <button class="btn btn-ghost btn-sm" onclick="exportIssues()">⬇ Export XLSX</button>
           </div>
         </div>
         <div class="card-body" style="padding:0">
           <div class="table-wrapper">
             <table>
-              <thead><tr><th>#</th><th>Dashboard</th><th>Module</th><th>Description</th><th>State</th><th>Status</th><th>Priority</th><th>SP</th><th>Sprint</th><th>Assigned To</th><th>Date</th><th></th></tr></thead>
+              <thead><tr><th>#</th><th>Particular</th><th>Module</th><th>Description</th><th>State</th><th>Status</th><th>Priority</th><th>SP</th><th>Sprint</th><th>Assigned To</th><th>Date</th><th></th></tr></thead>
               <tbody id="issues-body"><tr><td colspan="11"><div class="empty-state"><div class="loader"></div></div></td></tr></tbody>
             </table>
           </div>
@@ -457,20 +461,9 @@ select.form-control option { background: #ffffff; color: #333333; }
 
             <div class="form-row">
               <div class="form-group">
-                <label>Dashboard</label>
-                <select class="form-control" id="ni-dashboard">
-                  <option value="">— Select Dashboard —</option>
-                  <option value="MCC">MCC</option>
-                  <option value="MSP">MSP</option>
-                  <option value="BPI">BPI</option>
-                  <option value="TBG">TBG</option>
-                  <option value="RCBC">RCBC</option>
-                  <option value="WPY">WPY</option>
-                  <option value="SEC">SEC</option>
-                  <option value="MCSI">MCSI</option>
-                  <option value="UAT-MCC">UAT-MCC</option>
-                  <option value="UAT-MSP">UAT-MSP</option>
-                  <option value="UAT-BPI">UAT-BPI</option>
+                <label>Particular</label>
+                <select class="form-control" id="ni-particular">
+                  <option value="">— Select Particular —</option>
                 </select>
               </div>
               <div class="form-group">
@@ -619,20 +612,9 @@ select.form-control option { background: #ffffff; color: #333333; }
 
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;">
               <div class="form-group">
-                <label>Dashboard</label>
-                <select class="form-control" id="us-dashboard">
-                  <option value="">— Select Dashboard —</option>
-                  <option value="MCC">MCC</option>
-                  <option value="MSP">MSP</option>
-                  <option value="BPI">BPI</option>
-                  <option value="TBG">TBG</option>
-                  <option value="RCBC">RCBC</option>
-                  <option value="WPY">WPY</option>
-                  <option value="SEC">SEC</option>
-                  <option value="MCSI">MCSI</option>
-                  <option value="UAT-MCC">UAT-MCC</option>
-                  <option value="UAT-MSP">UAT-MSP</option>
-                  <option value="UAT-BPI">UAT-BPI</option>
+                <label>Particular</label>
+                <select class="form-control" id="us-particular">
+                  <option value="">— Select Particular —</option>
                 </select>
               </div>
               <div class="form-group">
@@ -729,9 +711,9 @@ select.form-control option { background: #ffffff; color: #333333; }
             </div>
             <div class="form-group">
               <label>Imported By</label>
-              <select class="form-control" id="import-user">
-                <option value="">— Select User —</option>
-              </select>
+              <div id="import-user-wrapper">
+                <!-- Filled dynamically by setupImportedBy() -->
+              </div>
             </div>
             <button class="btn btn-primary" id="import-btn" onclick="doImport()">📥 Import File</button>
             <div id="import-result" style="display:none;"></div>
@@ -1056,6 +1038,28 @@ select.form-control option { background: #ffffff; color: #333333; }
     <div class="modal-body">
       <div class="form-row">
         <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="edit-title" placeholder="Short title for this issue" />
+        </div>
+        <div class="form-group">
+          <label>Particular</label>
+          <select class="form-control" id="edit-particular">
+            <option value="">— Select Particular —</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Module</label>
+          <input type="text" id="edit-module" placeholder="e.g. Login, Reports, Users…" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="edit-description" rows="3" placeholder="Describe the issue…"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
           <label>Status <span style="font-size:9px;color:#aaa;font-weight:400;text-transform:none;">— Progress of this issue</span></label>
           <select class="form-control" id="edit-state">
             <option value="In Progress">In Progress — Being worked on</option>
@@ -1156,6 +1160,7 @@ const API = window.location.protocol + '//' + window.location.hostname + '/issue
 let currentIssueId  = null;
 let currentReportId = null;
 let allUsers        = [];
+let allParticulars  = [];  // master cache for particulars
 let charts          = {};
 let searchTimeout   = null;
 
@@ -1208,10 +1213,34 @@ function md5(string) {
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-  // Show maintenance only for admin
-  if (localStorage.getItem('role') === 'admin') {
-    const m = document.getElementById('nav-maintenance');
-    if (m) m.style.display = '';
+  // ── Role-based nav visibility ──────────────────────────────
+  const role = localStorage.getItem('role');
+
+  // Maintenance: admin only
+  const m = document.getElementById('nav-maintenance');
+  if (m) m.style.display = (role === 'admin') ? '' : 'none';
+
+  // New Issue + User Story: reporters and admins only (not developers)
+  const canSubmit = (role === 'reporter' || role === 'admin');
+  const navNewIssue  = document.getElementById('nav-new-issue');
+  const navUserStory = document.getElementById('nav-user-story');
+  if (navNewIssue)  navNewIssue.style.display  = canSubmit ? '' : 'none';
+  if (navUserStory) navUserStory.style.display = canSubmit ? '' : 'none';
+
+  // Import XLSX: admin only
+  const navImport = document.getElementById('nav-import');
+  if (navImport) navImport.style.display = (role === 'admin') ? '' : 'none';
+
+  // Reports: admin and developer only (not reporters)
+  const navReports = document.getElementById('nav-reports');
+  if (navReports) navReports.style.display = (role === 'reporter') ? 'none' : '';
+
+  // Hide Management section label if developer has nothing under it
+  if (role === 'developer') {
+    const mgmtLabels = document.querySelectorAll('.nav-section-label');
+    mgmtLabels.forEach(lbl => {
+      if (lbl.textContent.trim() === 'Management') lbl.style.display = 'none';
+    });
   }
   loadUsers();
   loadDashboard();
@@ -1289,7 +1318,7 @@ async function apiFetch(url, opts = {}) {
     return json;
   } catch (e) {
     const isNetwork = e.message === 'Failed to fetch' || e.message.includes('NetworkError');
-    toast(isNetwork ? 'Connection error. Check if XAMPP Apache is running.' : ('API Error: ' + e.message), 'error');
+    toast(isNetwork ? 'Cannot reach server. Make sure XAMPP is running and you are on the same network.' : ('API Error: ' + e.message), 'error');
     console.error('apiFetch [' + url + ']:', e.message);
     throw e;
   }
@@ -1300,10 +1329,36 @@ async function apiFetch(url, opts = {}) {
 // ============================================================
 async function loadUsers() {
   try {
-    const res = await apiFetch('/get_users.php');
-    allUsers = res.data || [];
+    const [usersRes, partsRes] = await Promise.all([
+      apiFetch('/get_users.php'),
+      apiFetch('/get_particulars.php')
+    ]);
+    allUsers       = usersRes.data  || [];
+    allParticulars = partsRes.data  || [];
     populateUserSelects();
-  } catch { allUsers = []; }
+    populateParticulars();
+  } catch { allUsers = []; allParticulars = []; }
+}
+
+function populateParticulars() {
+  // Populate all particular dropdowns: form selects + filter bar
+  const selectors = ['ni-particular', 'us-particular', 'edit-particular', 'filter-particular'];
+  selectors.forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const isFilter = id === 'filter-particular';
+    const firstOpt = isFilter ? '— All Particulars —' : '— Select Particular —';
+    // Keep first option, rebuild the rest
+    sel.innerHTML = `<option value="">${firstOpt}</option>`;
+    allParticulars
+      .filter(p => p.isActive == 1 || isFilter)  // filter bar shows all; forms show active only
+      .forEach(p => {
+        const opt = document.createElement('option');
+        opt.value       = p.particular_id;
+        opt.textContent = p.name;
+        sel.appendChild(opt);
+      });
+  });
 }
 
 function populateUserSelects() {
@@ -1312,37 +1367,30 @@ function populateUserSelects() {
   // Issued By — smart based on who is logged in
   setupIssuedBy();
 
-  // Assigned To — developers only
+  // Imported By — same smart logic as Issued By
+  setupImportedBy();
+
+  // Assigned To — active developers only, no default
   ['ni-assigned-to', 'us-assigned-to', 'edit-assigned-to'].forEach(id => {
     const sel = document.getElementById(id);
     if (!sel) return;
     sel.innerHTML = '<option value="">— Unassigned —</option>';
-    developers.forEach(u => {
+    developers.filter(u => u.isActive !== 0 && u.isActive !== '0').forEach(u => {
       const opt = document.createElement('option');
       opt.value = u.id; opt.textContent = u.name;
       sel.appendChild(opt);
     });
+    // Default to Stephen if available, but remains changeable
     const stephen = developers.find(u => u.name.toLowerCase().includes('stephen'));
-    if (stephen) sel.value = stephen.id;
+    if (stephen && id !== 'edit-assigned-to') sel.value = stephen.id;
   });
-
-  // Import user — all users
-  const importSel = document.getElementById('import-user');
-  if (importSel) {
-    importSel.innerHTML = '<option value="">— Select User —</option>';
-    allUsers.forEach(u => {
-      const opt = document.createElement('option');
-      opt.value = u.id; opt.textContent = u.name;
-      importSel.appendChild(opt);
-    });
-  }
 }
 
 function setupIssuedBy() {
   const role     = localStorage.getItem('role');
   const userId   = localStorage.getItem('userId');
   const userName = localStorage.getItem('userName');
-  const reporters = allUsers.filter(u => u.role === 'reporter');
+  const reporters = allUsers.filter(u => u.role === 'reporter' && u.isActive !== 0 && u.isActive !== '0');
 
   ['ni', 'us'].forEach(prefix => {
     const wrapper = document.getElementById(prefix + '-issued-by-wrapper');
@@ -1374,6 +1422,42 @@ function setupIssuedBy() {
         escHtml(displayName) + '</div>';
     }
   });
+}
+
+function setupImportedBy() {
+  const role     = localStorage.getItem('role');
+  const userId   = localStorage.getItem('userId');
+  const userName = localStorage.getItem('userName');
+  const wrapper  = document.getElementById('import-user-wrapper');
+  if (!wrapper) return;
+
+  if (role === 'admin') {
+    // Admin gets a dropdown of all active users
+    const sel = document.createElement('select');
+    sel.className = 'form-control';
+    sel.id = 'import-user';
+    sel.innerHTML = '<option value="">— Select User —</option>';
+    allUsers.filter(u => u.isActive !== 0 && u.isActive !== '0').forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.id; opt.textContent = u.name;
+      sel.appendChild(opt);
+    });
+    // Default to logged-in admin
+    const loggedUser = allUsers.find(u => String(u.id) === String(userId));
+    if (loggedUser) sel.value = loggedUser.id;
+    wrapper.innerHTML = '';
+    wrapper.appendChild(sel);
+  } else {
+    // Non-admin: locked to logged-in user
+    const loggedUser  = allUsers.find(u => String(u.id) === String(userId));
+    const displayName = loggedUser ? loggedUser.name : (userName || 'Unknown');
+    const uid         = loggedUser ? loggedUser.id : (userId || '');
+    wrapper.innerHTML =
+      '<input type="hidden" id="import-user" value="' + uid + '" />' +
+      '<div style="padding:9px 12px;background:#f8f8f8;border:1px solid var(--border);' +
+      'border-radius:7px;font-size:13px;color:var(--text-bright);font-weight:600;">' +
+      escHtml(displayName) + '</div>';
+  }
 }
 
 // ============================================================
@@ -1471,6 +1555,7 @@ function recentIssueRow(i) {
 // ============================================================
 let _issuesCache = [];
 let _issuesPage  = 1;
+let _filterMine  = false;
 const ISSUES_PER_PAGE = 10;
 
 function pgBtnStyle(active) {
@@ -1478,12 +1563,14 @@ function pgBtnStyle(active) {
 }
 
 async function loadIssues() {
-  const state    = document.getElementById('filter-state')?.value    || '';
-  const priority = document.getElementById('filter-priority')?.value || '';
-  const search   = document.getElementById('global-search')?.value.trim() || '';
-  const params   = new URLSearchParams();
-  if (state)    params.set('state', state);
-  if (priority) params.set('priority', priority);
+  const state      = document.getElementById('filter-state')?.value      || '';
+  const priority   = document.getElementById('filter-priority')?.value   || '';
+  const particular = document.getElementById('filter-particular')?.value || '';
+  const search     = document.getElementById('global-search')?.value.trim() || '';
+  const params     = new URLSearchParams();
+  if (state)      params.set('state', state);
+  if (priority)   params.set('priority', priority);
+  if (particular) params.set('particular', particular);
   if (search && isNaN(search)) params.set('search', search);
   try {
     const res = await apiFetch(`/get_issues.php?${params}`);
@@ -1497,6 +1584,14 @@ async function loadIssues() {
       );
     }
     _issuesCache = issues;
+    // Apply "My Issues" filter — show only issues assigned to or issued by the logged-in user
+    if (_filterMine) {
+      const myId = String(localStorage.getItem('userId') || '');
+      _issuesCache = issues.filter(i =>
+        String(i.assigned_to || '') === myId ||
+        String(i.issued_by   || '') === myId
+      );
+    }
     _issuesPage  = 1;
     renderIssuesPage();
   } catch { }
@@ -1538,10 +1633,22 @@ function renderIssuesPagination(total, totalPages) {
 
 function goIssuesPage(n) { _issuesPage = n; renderIssuesPage(); }
 
+function toggleMineFilter() {
+  _filterMine = !_filterMine;
+  const btn = document.getElementById('filter-mine-btn');
+  if (btn) {
+    btn.style.background     = _filterMine ? '#cc0000' : '';
+    btn.style.color          = _filterMine ? '#fff'    : '';
+    btn.style.borderColor    = _filterMine ? '#cc0000' : '';
+    btn.textContent          = _filterMine ? '👤 My Issues ✕' : '👤 My Issues';
+  }
+  loadIssues();
+}
+
 function allIssueRow(i) {
   return `<tr onclick="viewIssue(${i.id})">
     <td class="td-id">#${i.id}</td>
-    <td style="font-size:12px;white-space:nowrap;">${escHtml(i.dashboard||'—')}</td>
+    <td style="font-size:12px;white-space:nowrap;">${escHtml(i.particular_name||i.dashboard||'—')}</td>
     <td style="font-size:12px;">${escHtml(i.module||'—')}</td>
     <td class="td-desc">${escHtml(i.title || i.description)}</td>
     <td>${stateBadge(i.state)}</td>
@@ -1584,6 +1691,7 @@ async function viewIssue(id) {
             <div class="meta-row"><span class="meta-key">Status</span><span class="meta-val">${statusBadge(issue.status || (["New","Bug","Open"].includes(issue.state) ? "In Progress" : null))}</span></div>
             <div class="meta-row"><span class="meta-key">Priority</span><span class="meta-val">${priBadge(issue.priority)}</span></div>
             <div class="meta-row"><span class="meta-key">Story Points</span><span class="meta-val">${issue.storyPoints ? `<span class="sp-badge">${issue.storyPoints}</span> <span style="font-size:11px;color:#888;">${spHours(issue.storyPoints)}</span>` : '—'}</span></div>
+            <div class="meta-row"><span class="meta-key">Particular</span><span class="meta-val">${escHtml(issue.particular_name||'—')}</span></div>
             <div class="meta-row"><span class="meta-key">Dashboard</span><span class="meta-val">${escHtml(issue.dashboard||'—')}</span></div>
             <div class="meta-row"><span class="meta-key">Module</span><span class="meta-val">${escHtml(issue.module||'—')}</span></div>
             <div class="meta-row"><span class="meta-key">Area Path</span><span class="meta-val">${escHtml(issue.areaPath||'—')}</span></div>
@@ -1654,6 +1762,18 @@ async function viewIssue(id) {
 
     document.getElementById('edit-issue-btn').onclick   = () => openEditModal(issue);
     document.getElementById('delete-issue-btn').onclick = () => deleteIssue(id);
+
+    // RBAC: reporters cannot edit or delete issues
+    const userRole = localStorage.getItem('role');
+    const editBtn   = document.getElementById('edit-issue-btn');
+    const deleteBtn = document.getElementById('delete-issue-btn');
+    if (userRole === 'reporter') {
+      if (editBtn)   editBtn.style.display   = 'none';
+      if (deleteBtn) deleteBtn.style.display = 'none';
+    } else {
+      if (editBtn)   editBtn.style.display   = '';
+      if (deleteBtn) deleteBtn.style.display = '';
+    }
 
   } catch (e) {
     document.getElementById('issue-detail-body').innerHTML = `<div class="empty-state"><div class="es-icon">⚠️</div><div class="es-title">Failed to load issue</div></div>`;
@@ -2074,7 +2194,7 @@ function buildCommentUserWidget() {
   const role     = localStorage.getItem('role');
   const userId   = localStorage.getItem('userId');
   const userName = localStorage.getItem('userName');
-  const reporters = allUsers.filter(u => u.role === 'reporter');
+  const reporters = allUsers.filter(u => u.role === 'reporter' && u.isActive !== 0 && u.isActive !== '0');
 
   if (role === 'admin') {
     // Admin gets dropdown of all reporters
@@ -2148,6 +2268,11 @@ async function deleteComment(commentId) {
 // EDIT
 // ============================================================
 function openEditModal(issue) {
+  // New fields: title, description, particular, module
+  document.getElementById('edit-title').value           = issue.title || '';
+  document.getElementById('edit-description').value     = issue.description || '';
+  document.getElementById('edit-particular').value      = issue.particular_id || '';
+  document.getElementById('edit-module').value          = issue.module || '';
   // Status field (edit-state) shows progress status, defaulting to In Progress for new issues
   document.getElementById('edit-state').value = issue.status || issue.state || 'In Progress';
   document.getElementById('edit-priority').value           = issue.priority;
@@ -2163,10 +2288,14 @@ function openEditModal(issue) {
 async function saveEdit() {
   const statusVal = document.getElementById('edit-state').value;
   const dto = {
+    title:               document.getElementById('edit-title').value.trim()        || null,
+    description:         document.getElementById('edit-description').value.trim()  || null,
+    particularId:        document.getElementById('edit-particular').value          || null,
+    module:              document.getElementById('edit-module').value.trim()        || null,
     status:              statusVal,
     priority:            document.getElementById('edit-priority').value,
-    storyPoints:         document.getElementById('edit-story-points').value || null,
-    assignedTo:          document.getElementById('edit-assigned-to').value  || null,
+    storyPoints:         document.getElementById('edit-story-points').value        || null,
+    assignedTo:          document.getElementById('edit-assigned-to').value         || null,
     iterationPath:       document.getElementById('edit-iteration-path').value,
     areaPath:            document.getElementById('edit-area-path').value,
     acceptanceCriteria:  document.getElementById('edit-acceptance-criteria').value,
@@ -2211,12 +2340,16 @@ async function deleteIssue(id) {
 // ============================================================
 async function submitNewIssue(e) {
   e.preventDefault();
+  // Guard: ensure users are loaded before reading issued-by
+  if (!allUsers || allUsers.length === 0) {
+    await loadUsers();
+  }
   const btn = document.getElementById('ni-submit-btn');
   btn.disabled = true;
   btn.innerHTML = '<div class="loader"></div> Saving…';
 
   const dto = {
-    dashboard:      document.getElementById('ni-dashboard').value || null,
+    particularId:   parseInt(document.getElementById('ni-particular').value) || null,
     module:         document.getElementById('ni-module').value.trim() || null,
     description:    document.getElementById('ni-desc').value.trim(),
     state:          document.getElementById('ni-state').value            || 'New',
@@ -2250,6 +2383,10 @@ async function submitNewIssue(e) {
 // ============================================================
 async function submitUserStory(e) {
   e.preventDefault();
+  // Guard: ensure users are loaded before reading issued-by
+  if (!allUsers || allUsers.length === 0) {
+    await loadUsers();
+  }
 
   // Required field validation
   const requiredFields = [
@@ -2260,7 +2397,7 @@ async function submitUserStory(e) {
     { id: 'us-area-path',           label: 'Area Path' },
     { id: 'us-iteration-path',      label: 'Iteration Path' },
     { id: 'us-desc',                label: 'Description' },
-    { id: 'us-dashboard',           label: 'Dashboard' },
+    { id: 'us-particular',          label: 'Particular' },
     { id: 'us-module',              label: 'Module' },
     { id: 'us-story-points',        label: 'Story Points' },
     { id: 'us-priority',            label: 'Priority' },
@@ -2302,7 +2439,7 @@ async function submitUserStory(e) {
 
   const dto = {
     title:              document.getElementById('us-title').value.trim(),
-    dashboard:          document.getElementById('us-dashboard').value || null,
+    particularId:       parseInt(document.getElementById('us-particular').value) || null,
     module:             document.getElementById('us-module').value.trim() || null,
     description:        document.getElementById('us-desc').value.trim(),
     state:              document.getElementById('us-state').value                     || 'Draft',
@@ -2365,6 +2502,10 @@ function clearFile() {
 
 async function doImport() {
   if (!selectedFile) { toast('Please select an XLSX file.', 'error'); return; }
+  // Guard: ensure users are loaded
+  if (!allUsers || allUsers.length === 0) {
+    await loadUsers();
+  }
   const userId = document.getElementById('import-user').value;
   const btn    = document.getElementById('import-btn');
   const result = document.getElementById('import-result');
@@ -2540,7 +2681,16 @@ function filterReportHistory() {
   const filtered = _reportHistoryCache.filter(r => {
     const raw = (r.generated_at || '').toLowerCase();
     const fmt = fmtDateTime(r.generated_at).toLowerCase();
-    return raw.includes(q) || fmt.includes(q);
+    // Also match ISO date parts: year, month number, day
+    const d = new Date(r.generated_at);
+    const iso = isNaN(d) ? '' : d.toISOString().toLowerCase();
+    const monthName = isNaN(d) ? '' : d.toLocaleString('en',{month:'long'}).toLowerCase();
+    const monthShort= isNaN(d) ? '' : d.toLocaleString('en',{month:'short'}).toLowerCase();
+    const year  = isNaN(d) ? '' : String(d.getFullYear());
+    const day   = isNaN(d) ? '' : String(d.getDate());
+    return raw.includes(q) || fmt.includes(q) || iso.includes(q) ||
+           monthName.includes(q) || monthShort.includes(q) ||
+           year.includes(q) || day === q;
   });
   renderReportHistory(filtered);
 }
