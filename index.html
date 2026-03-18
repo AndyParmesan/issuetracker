@@ -412,7 +412,7 @@ select.form-control option { background: #ffffff; color: #333333; }
     <div class="view" id="view-issues">
       <div class="card">
         <div class="card-header">
-          <div class="card-title">All Items</div>
+          <div class="card-title" id="all-items-title">ALL ITEMS & USER STORY</div>
           <div class="sep"></div>
           <div class="filter-bar">
             <select class="filter-select" id="filter-particular" onchange="loadIssues()">
@@ -437,7 +437,11 @@ select.form-control option { background: #ffffff; color: #333333; }
               <option>1-Urgent</option><option>2-Critical</option><option>3-High</option>
               <option>4-Medium</option><option>5-Low</option>
             </select>
-            <button id="filter-mine-btn" class="btn btn-ghost btn-sm" onclick="toggleMineFilter()" style="white-space:nowrap;">My Items</button>
+            <select id="filter-mine-btn" class="filter-select" onchange="toggleMineFilter(this.value)" style="white-space:nowrap;">
+              <option value="all">All</option>
+              <option value="item">My Items</option>
+              <option value="story">My User Story</option>
+            </select>
             <button class="btn btn-ghost btn-sm" onclick="exportIssues()">⬇ Export XLSX</button>
           </div>
         </div>
@@ -580,16 +584,16 @@ select.form-control option { background: #ffffff; color: #333333; }
               <div class="form-group">
                 <label>State *</label>
                 <select class="form-control" id="us-state" required>
-                  <option value="Draft" selected>Draf</option>
-                  <option value="For Review">For Review</option>
-                  <option value="Approved">Approved</option>
-                  <option value="In Development">In Development</option>
-                  <option value="For Testing">For Testing</option>
-                  <option value="QA Failed">QA Failed</option>
-                  <option value="For UAT">For UAT</option>
-                  <option value="Ready for Deployment">Ready for Deployment</option>
-                  <option value="Deployed">Deployed</option>
-                  <option value="Closed">Closed</option>
+                  <option value="Draft" selected>Draft — Created, not yet reviewed</option>
+                  <option value="For Review">For Review — Awaiting PO approval</option>
+                  <option value="Approved">Approved — Ready for sprint planning</option>
+                  <option value="In Development">In Development — Being worked on</option>
+                  <option value="For Testing">For Testing — Dev complete, ready for QA</option>
+                  <option value="QA Failed">QA Failed — Issues found, back to Dev</option>
+                  <option value="For UAT">For UAT — Passed QA, awaiting validation</option>
+                  <option value="Ready for Deployment">Ready for Deployment — UAT approved</option>
+                  <option value="Deployed">Deployed — Successfully released</option>
+                  <option value="Closed">Closed — Fully completed</option>
                 </select>
               </div>
               <div class="form-group">
@@ -928,13 +932,13 @@ select.form-control option { background: #ffffff; color: #333333; }
         <!-- TAB HEADERS -->
         <div style="display:flex;border-bottom:2px solid #f0f0f0;background:#f8f8f8;">
           <button id="maint-tab-users" onclick="switchMaintTab('users')"
-            style="padding:10px 20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-family:'Roboto Mono',monospace;border:none;border-bottom:3px solid #cc0000;margin-bottom:-2px;background:transparent;cursor:pointer;color:#cc0000;display:flex;align-items:center;gap:6px;">
-            USERS <span id="users-count" style="font-size:10px;font-weight:700;background:rgba(204,0,0,0.12);color:#cc0000;padding:1px 7px;border-radius:20px;font-family:'Roboto Mono',monospace;"></span>
-          </button>
-          <button id="maint-tab-particulars" onclick="switchMaintTab('particulars')"
-            style="padding:10px 20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-family:'Roboto Mono',monospace;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;background:transparent;cursor:pointer;color:#aaa;display:flex;align-items:center;gap:6px;">
-            PARTICULARS <span id="particulars-count" style="font-size:10px;font-weight:700;background:rgba(100,100,200,0.12);color:#4a64ce;padding:1px 7px;border-radius:20px;font-family:'Roboto Mono',monospace;"></span>
-          </button>
+          style="padding:10px 20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-family:'Roboto Mono',monospace;border:none;border-bottom:3px solid #cc0000;margin-bottom:-2px;background:transparent;cursor:pointer;color:#cc0000;display:flex;align-items:center;gap:6px;">
+          USERS <span id="users-count" style="font-size:10px;font-weight:700;background:rgba(204,0,0,0.12);color:#cc0000;padding:1px 7px;border-radius:20px;font-family:'Roboto Mono',monospace;"></span>
+        </button>
+        <button id="maint-tab-particulars" onclick="switchMaintTab('particulars')"
+          style="padding:10px 20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-family:'Roboto Mono',monospace;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;background:transparent;cursor:pointer;color:#aaa;display:flex;align-items:center;gap:6px;">
+          PARTICULARS <span id="particulars-count" style="font-size:10px;font-weight:700;background:rgba(100,100,200,0.12);color:#4a64ce;padding:1px 7px;border-radius:20px;font-family:'Roboto Mono',monospace;"></span>
+        </button>
           <div style="margin-left:auto;padding:6px 12px;display:none;" id="maint-add-particular-btn">
             <button onclick="openParticularModal('add')" style="padding:5px 14px;background:#cc0000;color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Raleway',sans-serif;">➕ Add</button>
           </div>
@@ -1582,7 +1586,7 @@ function recentIssueRow(i) {
 // ============================================================
 let _issuesCache = [];
 let _issuesPage  = 1;
-let _filterMine  = false;
+let _filterMine  = 'all';
 const ISSUES_PER_PAGE = 10;
 
 function pgBtnStyle(active) {
@@ -1611,13 +1615,16 @@ async function loadIssues() {
       );
     }
     _issuesCache = issues;
-    // Apply "My Issues" filter — show only issues assigned to or issued by the logged-in user
-    if (_filterMine) {
+    // Apply My Items / My User Story filter
+    if (_filterMine === 'item' || _filterMine === 'story') {
       const myId = String(localStorage.getItem('userId') || '');
-      _issuesCache = issues.filter(i =>
-        String(i.assigned_to || '') === myId ||
-        String(i.issued_by   || '') === myId
-      );
+      _issuesCache = issues.filter(i => {
+        const isMine = String(i.assigned_to || '') === myId || String(i.issued_by || '') === myId;
+        const isStory = i.source === 'user_story';
+        if (_filterMine === 'item')  return isMine && !isStory;
+        if (_filterMine === 'story') return isMine && isStory;
+        return isMine;
+      });
     }
     _issuesPage  = 1;
     renderIssuesPage();
@@ -1660,14 +1667,13 @@ function renderIssuesPagination(total, totalPages) {
 
 function goIssuesPage(n) { _issuesPage = n; renderIssuesPage(); }
 
-function toggleMineFilter() {
-  _filterMine = !_filterMine;
-  const btn = document.getElementById('filter-mine-btn');
-  if (btn) {
-    btn.style.background     = _filterMine ? '#cc0000' : '';
-    btn.style.color          = _filterMine ? '#fff'    : '';
-    btn.style.borderColor    = _filterMine ? '#cc0000' : '';
-    btn.textContent          = _filterMine ? 'My Items' : 'My Items';
+function toggleMineFilter(val) {
+  _filterMine = val;
+  const titleEl = document.getElementById('all-items-title');
+  if (titleEl) {
+    if (val === 'item')        titleEl.textContent = 'MY ITEMS';
+    else if (val === 'story')  titleEl.textContent = 'MY USER STORY';
+    else                       titleEl.textContent = 'ALL ITEMS & USER STORY';
   }
   loadIssues();
 }
@@ -1735,7 +1741,7 @@ async function viewIssue(id) {
             <div class="meta-row"><span class="meta-key">Priority</span><span class="meta-val">${priBadge(issue.priority)}</span></div>
             <div class="meta-row"><span class="meta-key">Story Points</span><span class="meta-val">${issue.storyPoints ? `<span class="sp-badge">${issue.storyPoints}</span> <span style="font-size:11px;color:#888;">${spHours(issue.storyPoints)}</span>` : '—'}</span></div>
             <div class="meta-row"><span class="meta-key">Sprint</span><span class="meta-val">${escHtml(issue.iterationPath||'—')}</span></div>
-            <div class="meta-row"><span class="meta-key">Particular</span><span class="meta-val">${escHtml(issue.particular_name||'—')}</span></div>
+            <div class="meta-row"><span class="meta-key">Particular</span><span class="meta-val">${escHtml(issue.particular_name||issue.particularName||'—')}</span></div>
             <div class="meta-row"><span class="meta-key">Module</span><span class="meta-val">${escHtml(issue.module||'—')}</span></div>
             <div class="meta-row"><span class="meta-key">Assigned To</span><span class="meta-val">${escHtml(issue.assignedToName||'Unassigned')}</span></div>
             <div class="meta-row"><span class="meta-key">Created By</span><span class="meta-val">${escHtml(issue.issuedByName||'—')}</span></div>
@@ -1754,7 +1760,7 @@ async function viewIssue(id) {
             <div class="meta-row"><span class="meta-key">State</span><span class="meta-val">${stateBadge(issue.state)}</span></div>
             <div class="meta-row"><span class="meta-key">Status</span><span class="meta-val">${statusBadge(issue.status)}</span></div>
             <div class="meta-row"><span class="meta-key">Priority</span><span class="meta-val">${priBadge(issue.priority)}</span></div>
-            <div class="meta-row"><span class="meta-key">Particular</span><span class="meta-val">${escHtml(issue.particular_name||'—')}</span></div>
+            <div class="meta-row"><span class="meta-key">Particular</span><span class="meta-val">${escHtml(issue.particular_name||issue.particularName||'—')}</span></div>
             <div class="meta-row"><span class="meta-key">Module</span><span class="meta-val">${escHtml(issue.module||'—')}</span></div>
             <div class="meta-row"><span class="meta-key">Assigned To</span><span class="meta-val">${escHtml(issue.assignedToName||'Unassigned')}</span></div>
             <div class="meta-row"><span class="meta-key">Created By</span><span class="meta-val">${escHtml(issue.issuedByName||'—')}</span></div>
@@ -1866,10 +1872,8 @@ function switchMaintTab(tab) {
 
 // ── PARTICULARS CRUD ──────────────────────────────────────────
 let _allParticularsCache = [];
-_particularsPage = 1;
-renderParticularsList();
-const pcnt = document.getElementById('particulars-count');
-if (pcnt) pcnt.textContent = _allParticularsCache.length;
+let _particularsPage = 1;
+const PARTS_PER_PAGE = 5;
 
 async function loadParticulars() {
   const tbody = document.getElementById('particular-tbody');
@@ -1877,11 +1881,17 @@ async function loadParticulars() {
   tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;"><div class="loader"></div></td></tr>';
   try {
     const res = await apiFetch('/get_particulars.php');
+    if (!res || !res.success) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:#cc0000;">Failed to load particulars: ' + (res && res.message ? res.message : 'Unknown error') + '</td></tr>';
+      return;
+    }
     _allParticularsCache = res.data || [];
     _particularsPage = 1;
     renderParticularsList();
-  } catch {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:#cc0000;">Failed to load particulars.</td></tr>';
+    const pcnt = document.getElementById('particulars-count');
+    if (pcnt) pcnt.textContent = _allParticularsCache.length;
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:#cc0000;">Failed to load particulars: ' + err.message + '</td></tr>';
   }
 }
 
@@ -2989,7 +2999,7 @@ async function generateReport() {
     document.getElementById('report-grid').innerHTML = [
       ['Total Issues',r.totalIssues,],['New',r.newCount,],['Bugs',r.bugCount,],
       ['Open',r.openCount,],['In Progress',r.inProgressCount,],['Resolved',r.resolvedCount,]
-      ].map(([label, val]) => `
+    ].map(([label, val]) => `
       <div class="report-stat-box">
       <div><div class="rs-label">${label}</div><div class="rs-val">${val}</div></div>
       </div>`).join('');
