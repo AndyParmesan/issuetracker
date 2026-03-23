@@ -879,6 +879,22 @@ select.form-control option { background: #ffffff; color: #333333; }
         <div class="card">
           <div class="card-header"><div class="card-title">Import XLSX File</div></div>
           <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
+
+            <!-- IMPORT TYPE SELECTOR -->
+            <div class="form-group">
+              <label>Import Type</label>
+              <div style="display:flex;gap:10px;margin-top:4px;">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;background:#fff;border:2px solid #cc0000;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;color:#cc0000;text-transform:none;letter-spacing:0;font-family:'Raleway',sans-serif;">
+                  <input type="radio" name="import-type" id="import-type-item" value="item" checked style="accent-color:#cc0000;width:15px;height:15px;" />
+                  📋 Item
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;background:#fff;border:2px solid #ccc;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;color:#888;text-transform:none;letter-spacing:0;font-family:'Raleway',sans-serif;" id="import-type-story-label">
+                  <input type="radio" name="import-type" id="import-type-story" value="user_story" style="accent-color:#cc0000;width:15px;height:15px;" />
+                  📖 User Story
+                </label>
+              </div>
+            </div>
+
             <div class="drop-zone" id="drop-zone" onclick="document.getElementById('csv-file').click()">
               <div class="dz-icon">📂</div>
               <div class="dz-title">Drop XLSX file here</div>
@@ -910,13 +926,20 @@ select.form-control option { background: #ffffff; color: #333333; }
           <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
             <p style="font-size:12.5px;color:var(--text-dim);">Your XLSX file must include these columns in order:</p>
             <div style="background:#f5f5f5;border-radius:8px;padding:14px;font-family:'Roboto Mono',monospace;font-size:11px;color:#333;line-height:2;overflow-x:auto;">
-              ID | Dashboard | Module | Description | State | Status | Priority | Story Points | Sprint | Created By | Assigned To | Date Identified
+              ID | Particular | Module | Description | State | Status | Priority | Created By | Assigned To | Date Identified
             </div>
+            <p style="font-size:11px;color:#888;margin-top:-6px;">Also supports extended format with Story Points, Sprint, Area Path columns after Priority.</p>
             <p style="font-size:12.5px;color:var(--text-dim);">The first row is treated as a header and skipped automatically.</p>
             <div style="background:#f5f5f5;border-radius:8px;padding:14px;font-family:'Roboto Mono',monospace;font-size:11px;color:#cc0000;line-height:2;overflow-x:auto;">
               e.g. MCC | Inventory | Login button not responding
             </div>
-            <p style="font-size:11.5px;color:var(--text-dim);">Valid states: <span style="color:#cc0000">New, Bug, Open</span> &nbsp;·&nbsp; Valid statuses: <span style="color:#cc0000">In Progress, Fixed, Resolved</span></p>
+            <p style="font-size:11px;color:#888;">💡 <strong>Assigned To</strong> is always imported as <strong>Unassigned</strong> — assign later via Edit.</p>
+            <p style="font-size:11.5px;color:var(--text-dim);">
+              <strong>Item states:</strong> <span style="color:#cc0000">New, Bug, Open, In Progress, As Designed, Enhancement, Needs Clarification, Monitoring, Closed</span>
+            </p>
+            <p style="font-size:11.5px;color:var(--text-dim);">
+              <strong>User Story states:</strong> <span style="color:#cc0000">Draft, For Review, Approved, In Development, For Testing, QA Failed, For UAT, Ready for Deployment, Deployed, Closed</span>
+            </p>
             <p style="font-size:11.5px;color:var(--text-dim);">Valid priorities: <span style="color:#cc0000">1-Urgent, 2-Critical, 3-High, 4-Medium, 5-Low</span></p>
           </div>
         </div>
@@ -1266,20 +1289,6 @@ select.form-control option { background: #ffffff; color: #333333; }
         <label>Description</label>
         <textarea id="edit-description" rows="3" placeholder="Describe the issue…"></textarea>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Priority</label>
-          <select class="form-control" id="edit-priority">
-            <option>1-Urgent</option><option>2-Critical</option><option>3-High</option><option>4-Medium</option><option>5-Low</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Assigned To</label>
-          <select class="form-control" id="edit-assigned-to">
-            <option value="">— Unassigned —</option>
-          </select>
-        </div>
-      </div>
 
       <!-- ITEM-ONLY FIELDS -->
       <div id="edit-item-fields">
@@ -1358,6 +1367,58 @@ select.form-control option { background: #ffffff; color: #333333; }
         <div class="form-group">
           <label>Acceptance Criteria</label>
           <textarea id="edit-acceptance-criteria" rows="4" placeholder="Conditions for story completion…"></textarea>
+        </div>
+      </div>
+
+      <!-- PRIORITY (common) -->
+      <div class="form-group">
+        <label>Priority</label>
+        <select class="form-control" id="edit-priority">
+          <option>1-Urgent</option><option>2-Critical</option><option>3-High</option><option>4-Medium</option><option>5-Low</option>
+        </select>
+      </div>
+
+      <!-- CREATED BY / ASSIGNED TO (common) -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Created By</label>
+          <select class="form-control" id="edit-issued-by">
+            <option value="">— Select —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Assigned To</label>
+          <select class="form-control" id="edit-assigned-to">
+            <option value="">— Unassigned —</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- DATE (common) -->
+      <div class="form-group">
+        <label>Date Identified</label>
+        <input type="date" id="edit-date-identified" />
+      </div>
+
+      <!-- ATTACHMENT (common) -->
+      <div class="form-group">
+        <label>Attachment <span style="color:var(--text-dim);font-size:11px;">(Max 25MB)</span></label>
+        <div>
+          <label for="edit-attachment" style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px dashed #cc0000;border-radius:7px;padding:7px 16px;cursor:pointer;font-size:12.5px;font-weight:600;color:#cc0000;">
+            + Attach File
+          </label>
+          <input type="file" id="edit-attachment" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;" onchange="renderEditAttachmentPreviews()" />
+          <div id="edit-attachment-list" style="margin-top:8px;display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+      </div>
+
+      <!-- COMMENT (common) -->
+      <div class="form-group">
+        <label>Comment</label>
+        <div id="edit-comments-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>
+        <div style="display:flex;gap:8px;">
+          <textarea id="edit-comment-input" placeholder="Write a comment…" rows="2" style="flex:1;resize:none;"></textarea>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="addEditFormComment()" style="align-self:flex-end;">+ Add</button>
         </div>
       </div>
 
@@ -1660,7 +1721,23 @@ function populateUserSelects() {
   // Imported By — same smart logic as Issued By
   setupImportedBy();
 
-  // Assigned To — active developers only, no default
+  // Import type toggle — highlight selected radio button
+  document.querySelectorAll('input[name="import-type"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      document.querySelectorAll('input[name="import-type"]').forEach(r => {
+        const lbl = r.parentElement;
+        if (r.checked) {
+          lbl.style.borderColor = '#cc0000';
+          lbl.style.color = '#cc0000';
+        } else {
+          lbl.style.borderColor = '#ccc';
+          lbl.style.color = '#888';
+        }
+      });
+    });
+  });
+
+  // Assigned To — active users, no default
   ['ni-assigned-to', 'us-assigned-to', 'edit-assigned-to'].forEach(id => {
     const sel = document.getElementById(id);
     if (!sel) return;
@@ -1670,10 +1747,18 @@ function populateUserSelects() {
       opt.value = u.id; opt.textContent = u.name;
       sel.appendChild(opt);
     });
-    // Default to Stephen if available, but remains changeable
-    const stephen = developers.find(u => u.name.toLowerCase().includes('stephen'));
-    if (stephen && id !== 'edit-assigned-to') sel.value = stephen.id;
   });
+
+  // Created By (edit modal) — all active users
+  const editIssuedBy = document.getElementById('edit-issued-by');
+  if (editIssuedBy) {
+    editIssuedBy.innerHTML = '<option value="">— Select —</option>';
+    allUsers.filter(u => u.isActive !== 0 && u.isActive !== '0').forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.id; opt.textContent = u.name;
+      editIssuedBy.appendChild(opt);
+    });
+  }
 }
 
 function setupIssuedBy() {
@@ -2007,13 +2092,15 @@ async function loadIssues() {
   if (state)      params.set('state', state);
   if (priority)   params.set('priority', priority);
   if (particular) params.set('particular', particular);
-  if (search && isNaN(search)) params.set('search', search);
+  if (search)     params.set('search', search);  // always send search to API
   try {
     const res = await apiFetch(`/get_issues.php?${params}`);
     let issues = res.data || [];
     if (search) {
       const q = search.toLowerCase();
+      const isNumeric = !isNaN(search) && search.trim() !== '';
       issues = issues.filter(i =>
+        (isNumeric && String(i.id) === search.trim()) ||  // exact ID match first
         String(i.id).includes(q) ||
         (i.description || '').toLowerCase().includes(q) ||
         (i.title       || '').toLowerCase().includes(q)
@@ -2030,6 +2117,10 @@ async function loadIssues() {
         if (_filterMine === 'story') return isMine && isStory;
         return isMine;
       });
+    }
+    // Sort by ID ascending when searching by number, otherwise keep default (newest first)
+    if (search && !isNaN(search)) {
+      _issuesCache = [..._issuesCache].sort((a, b) => a.id - b.id);
     }
     _issuesPage  = 1;
     renderIssuesPage();
@@ -2148,7 +2239,7 @@ async function viewIssue(id) {
           <div style="font-size:10px;font-weight:400;text-transform:uppercase;letter-spacing:0.1em;color:#aaa;font-family:'Roboto Mono',monospace;margin-bottom:4px;">Title</div>
           <h2 style="font-size:21px;font-weight:700;color:#1a1a1a;margin-bottom:4px;line-height:1.4;">${escHtml(issue.title || '—')}</h2>
           <div style="margin-bottom:14px;">
-            <div style="font-size:10px;font-weight:400;text-transform:uppercase;letter-spacing:0.1em;color:#aaa;font-family:'Roboto Mono',monospace;margin-bottom:6px;">Description</div>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1a1a1a;font-family:'Roboto Mono',monospace;margin-bottom:6px;">Description</div>
             <div style="font-size:12px;color:#1a1a1a;background:#f8f8f8;border:1px solid #eee;border-radius:8px;padding:12px 16px;line-height:1.6;white-space:pre-wrap;word-break:break-word;">${escHtml(issue.description || '—')}</div>
           </div>
           <div class="detail-meta">
@@ -2176,7 +2267,7 @@ async function viewIssue(id) {
             ${issue.title ? `<span style="font-size:14px;font-weight:700;color:#1a1a1a;">${escHtml(issue.title)}</span>` : ''}
           </div>
           <div style="margin-bottom:14px;">
-            <div style="font-size:10px;font-weight:400;text-transform:uppercase;letter-spacing:0.1em;color:#aaa;font-family:'Roboto Mono',monospace;margin-bottom:6px;">Description</div>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1a1a1a;font-family:'Roboto Mono',monospace;margin-bottom:6px;">Description</div>
             <div style="font-size:12px;color:#1a1a1a;background:#f8f8f8;border:1px solid #eee;border-radius:8px;padding:12px 16px;line-height:1.6;white-space:pre-wrap;word-break:break-word;">${escHtml(issue.description || '—')}</div>
           </div>
           <div class="detail-meta">
@@ -2860,12 +2951,43 @@ function openEditModal(issue) {
   document.getElementById('edit-story-fields').style.display = isStory ? 'block' : 'none';
 
   // Common fields
-  document.getElementById('edit-description').value = issue.description || '';
-  document.getElementById('edit-particular').value  = issue.particular_id || '';
-  document.getElementById('edit-module').value      = issue.module || '';
-  document.getElementById('edit-priority').value    = issue.priority || '4-Medium';
+  document.getElementById('edit-description').value     = issue.description || '';
+  document.getElementById('edit-particular').value      = issue.particular_id || '';
+  document.getElementById('edit-module').value          = issue.module || '';
+  document.getElementById('edit-priority').value        = issue.priority || '4-Medium';
+  document.getElementById('edit-date-identified').value = issue.dateIdentified || issue.date_identified || '';
+
+  // Populate Assigned To with all active users
   const sel = document.getElementById('edit-assigned-to');
-  if (sel) sel.value = issue.assigned_to || issue.assignedTo || '';
+  if (sel) {
+    sel.innerHTML = '<option value="">\u2014 Unassigned \u2014</option>';
+    allUsers.filter(u => u.isActive !== 0 && u.isActive !== '0').forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.id; opt.textContent = u.name;
+      sel.appendChild(opt);
+    });
+    sel.value = issue.assigned_to || issue.assignedTo || '';
+  }
+
+  // Populate Created By with all active users
+  const issuedSel = document.getElementById('edit-issued-by');
+  if (issuedSel) {
+    issuedSel.innerHTML = '<option value="">\u2014 Select \u2014</option>';
+    allUsers.filter(u => u.isActive !== 0 && u.isActive !== '0').forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.id; opt.textContent = u.name;
+      issuedSel.appendChild(opt);
+    });
+    issuedSel.value = issue.issued_by || issue.issuedBy || '';
+  }
+  // Reset comment/attachment fields
+  document.getElementById('edit-comment-input').value = '';
+  document.getElementById('edit-comments-list').innerHTML = '';
+  document.getElementById('edit-attachment-list').innerHTML = '';
+  editFormComments = [];
+  editAccumulatedFiles = new DataTransfer();
+  const editFileInput = document.getElementById('edit-attachment');
+  if (editFileInput) editFileInput.value = '';
 
   if (isStory) {
     document.getElementById('edit-title').value               = issue.title || '';
@@ -2884,11 +3006,13 @@ function openEditModal(issue) {
 async function saveEdit() {
   const isStory = document.getElementById('edit-story-fields').style.display !== 'none';
   const dto = {
-    description:  document.getElementById('edit-description').value.trim()  || null,
-    particularId: document.getElementById('edit-particular').value           || null,
-    module:       document.getElementById('edit-module').value.trim()        || null,
-    priority:     document.getElementById('edit-priority').value,
-    assignedTo:   document.getElementById('edit-assigned-to').value          || null,
+    description:    document.getElementById('edit-description').value.trim()     || null,
+    particularId:   document.getElementById('edit-particular').value             || null,
+    module:         document.getElementById('edit-module').value.trim()          || null,
+    priority:       document.getElementById('edit-priority').value,
+    assignedTo:     document.getElementById('edit-assigned-to').value            || null,
+    issuedBy:       document.getElementById('edit-issued-by').value              || null,
+    dateIdentified: document.getElementById('edit-date-identified').value        || null,
   };
   if (isStory) {
     dto.title              = document.getElementById('edit-title').value.trim()               || null;
@@ -2902,18 +3026,17 @@ async function saveEdit() {
   }
 
   try {
-    // FIX: id passed as query param, not path segment
     const oldIssue = await apiFetch(`/get_issue_detail.php?id=${currentIssueId}`);
     const old = oldIssue.data || {};
     const res = await apiFetch(`/update_issue.php?id=${currentIssueId}`, { method: 'POST', body: JSON.stringify(dto) });
     if (res.success) {
       const userName = localStorage.getItem('userName') || 'Unknown';
-      const userId = localStorage.getItem('userId') || null;
+      const userId   = localStorage.getItem('userId') || null;
       const fields = [
-        { key: 'status',    label: 'Status',      oldVal: old.status,      newVal: dto.status },
-        { key: 'state',     label: 'State',       oldVal: old.state,       newVal: dto.status },
-        { key: 'priority',  label: 'Priority',    oldVal: old.priority,    newVal: dto.priority },
-        { key: 'assignedTo',label: 'Assigned To', oldVal: old.assignedToName, newVal: dto.assignedTo },
+        { key: 'status',    label: 'Status',      oldVal: old.status,         newVal: dto.status },
+        { key: 'state',     label: 'State',        oldVal: old.state,          newVal: dto.state },
+        { key: 'priority',  label: 'Priority',     oldVal: old.priority,       newVal: dto.priority },
+        { key: 'assignedTo',label: 'Assigned To',  oldVal: old.assignedToName, newVal: dto.assignedTo },
       ];
       for (const f of fields) {
         if (f.oldVal != f.newVal) {
@@ -2922,6 +3045,25 @@ async function saveEdit() {
             fieldChanged: f.label, oldValue: f.oldVal || '—', newValue: f.newVal || '—'
           })});
         }
+      }
+      // Upload attachments if any
+      const editFileInput = document.getElementById('edit-attachment');
+      if (editFileInput && editFileInput.files.length > 0) {
+        for (const file of editFileInput.files) {
+          if (file.size > 25 * 1024 * 1024) { toast(`${file.name} exceeds 25MB.`, 'error'); continue; }
+          const fd = new FormData();
+          fd.append('file', file);
+          await fetch(`${API}/attachments.php?issueId=${currentIssueId}`, { method: 'POST', body: fd });
+        }
+      }
+      // Post comments if any
+      if (editFormComments.length > 0) {
+        for (const c of editFormComments) {
+          await apiFetch('/add_comment.php', { method: 'POST', body: JSON.stringify({
+            issueId: currentIssueId, userId, author: c.userName, comment: c.text
+          })});
+        }
+        editFormComments = [];
       }
       closeModal('edit-issue-modal');
       toast('Issue updated!', 'success');
@@ -3298,6 +3440,11 @@ async function doImport() {
   const userId = document.getElementById('import-user').value;
   const btn    = document.getElementById('import-btn');
   const result = document.getElementById('import-result');
+
+  // Get selected import type
+  const importType = document.querySelector('input[name="import-type"]:checked')?.value || 'item';
+  const source     = importType === 'user_story' ? 'user_story' : 'XLSX Import';
+
   btn.disabled = true;
   btn.innerHTML = '<div class="loader"></div> Reading file…';
 
@@ -3317,10 +3464,10 @@ async function doImport() {
     // Skip header row
     const dataRows = rows.slice(1);
 
-    const validStates     = ['New','Bug','Open','In Progress','Resolved',
-                             'Draft','For Review','Approved','In Development',
-                             'For Testing','QA Failed','For UAT',
-                             'Ready for Deployment','Deployed','Closed'];
+    const itemStates  = ['New','Bug','Open','In Progress','As Designed','Enhancement','Needs Clarification','Monitoring','Closed'];
+    const storyStates = ['Draft','For Review','Approved','In Development','For Testing','QA Failed','For UAT','Ready for Deployment','Deployed','Closed'];
+    const validStates = importType === 'user_story' ? storyStates : itemStates;
+    const defaultState = importType === 'user_story' ? 'Draft' : 'New';
     const validPriorities = ['1-Urgent','2-Critical','3-High','4-Medium','5-Low'];
 
     let importedCount = 0;
@@ -3332,9 +3479,18 @@ async function doImport() {
       const row    = dataRows[i];
       const rowNum = i + 2;
 
-      // Columns: 0=ID(skip) 1=Dashboard 2=Module 3=Description
-      //          4=State 5=Status 6=Priority 7=SP 8=Sprint
-      //          9=AreaPath 10=IssuedBy(name) 11=AssignedTo(name) 12=DateIdentified
+      // Columns — supports BOTH formats:
+      // Full:  0=ID 1=Particular 2=Module 3=Description 4=State 5=Status 6=Priority 7=SP 8=Sprint 9=AreaPath 10=CreatedBy 11=AssignedTo 12=DateIdentified
+      // Short: 0=ID 1=Particular 2=Module 3=Description 4=State 5=Status 6=Priority 7=CreatedBy 8=AssignedTo 9=DateIdentified
+      // Detect format by checking if col 9 looks like a date (short) or not (full)
+      const col9 = String(row[9] || '').trim();
+      const isShortFormat = col9 === '' || row[9] instanceof Date || (!isNaN(Date.parse(col9)) && col9.length <= 12);
+
+      const createdByCol    = isShortFormat ? 7  : 10;
+      const dateCol         = isShortFormat ? 9  : 12;
+      const storyPointsCol  = isShortFormat ? null : 7;
+      const iterPathCol     = isShortFormat ? null : 8;
+      const areaPathCol     = isShortFormat ? null : 9;
       let dashboard   = String(row[1] || '').trim() || null;
       let module      = String(row[2] || '').trim() || null;
       let description = String(row[3] || '').trim();
@@ -3356,21 +3512,21 @@ async function doImport() {
       if (!description) { errors.push(`Row ${rowNum}: Empty description, skipped.`); continue; }
 
       const rawState = String(row[4] || '').trim();
-      const state    = validStates.includes(rawState) ? rawState : 'New';
+      const state    = validStates.includes(rawState) ? rawState : defaultState;
 
       const rawStatus = String(row[5] || '').trim();
-      const status    = ['In Progress','Fixed','Resolved'].includes(rawStatus) ? rawStatus : 'In Progress';
+      const status    = ['In Progress','Fixed','Resolved','New','Open'].includes(rawStatus) ? rawStatus : 'New';
 
       const rawPri  = String(row[6] || '').trim();
       const priority = validPriorities.includes(rawPri) ? rawPri : '4-Medium';
 
-      const storyPoints    = row[7] ? String(row[7]).trim() : null;
-      const iterationPath  = row[8] ? String(row[8]).trim() : null;
-      const areaPath       = row[9] ? String(row[9]).trim() : null;
+      const storyPoints    = storyPointsCol !== null && row[storyPointsCol] ? String(row[storyPointsCol]).trim() : null;
+      const iterationPath  = iterPathCol   !== null && row[iterPathCol]    ? String(row[iterPathCol]).trim()    : null;
+      const areaPath       = areaPathCol   !== null && row[areaPathCol]    ? String(row[areaPathCol]).trim()    : null;
 
       // Date — handle JS Date object (cellDates:true) or string
       let dateIdentified = new Date().toISOString().split('T')[0];
-      const rawDate = row[12] || row[3];
+      const rawDate = row[dateCol];
       if (rawDate instanceof Date) {
         dateIdentified = rawDate.toISOString().split('T')[0];
       } else if (rawDate) {
@@ -3379,13 +3535,17 @@ async function doImport() {
       }
 
       // Match issued_by name to user ID
-      const issuedByName = String(row[10] || '').trim().toLowerCase();
+      const issuedByName = String(row[createdByCol] || '').trim().toLowerCase();
       const issuedByUser = allUsers.find(u => u.name.toLowerCase() === issuedByName);
       const issuedBy     = issuedByUser ? issuedByUser.id : (userId || null);
 
-      const assignedByName = String(row[11] || '').trim().toLowerCase();
-      const assignedUser   = allUsers.find(u => u.name.toLowerCase() === assignedByName);
-      const assignedTo     = assignedUser ? assignedUser.id : null;
+      // Always import as Unassigned — can be assigned later via Edit
+      const assignedTo = null;
+
+      // Match dashboard text to particular ID
+      const dashboardLower = (dashboard || '').toLowerCase().trim();
+      const matchedParticular = allParticulars.find(p => p.name.toLowerCase().trim() === dashboardLower);
+      const particularId = matchedParticular ? matchedParticular.particular_id : null;
 
       try {
         const res = await apiFetch('/create_issue.php', {
@@ -3394,7 +3554,8 @@ async function doImport() {
             dashboard, module, description, state, status, priority,
             storyPoints, iterationPath, areaPath,
             issuedBy, assignedTo, dateIdentified,
-            source: 'XLSX Import'
+            particularId,
+            source
           })
         });
         if (res.success) importedCount++;
@@ -3405,16 +3566,17 @@ async function doImport() {
     }
 
     result.style.display = '';
+    const typeLabel = importType === 'user_story' ? 'User Stor' : 'Issue';
     if (importedCount > 0) {
       result.innerHTML = `<div style="background:rgba(46,158,107,0.1);border:1px solid rgba(46,158,107,0.3);border-radius:8px;padding:14px 18px;">
-        <div style="font-weight:700;color:var(--success);margin-bottom:6px;">✅ ${importedCount} issue(s) imported successfully.</div>
+        <div style="font-weight:700;color:var(--success);margin-bottom:6px;">✅ ${importedCount} ${typeLabel}(ies) imported successfully.</div>
         ${errors.length ? `<div style="font-size:11px;color:var(--text-dim);margin-top:4px;">${errors.slice(0,5).map(e => `<div>⚠ ${escHtml(e)}</div>`).join('')}</div>` : ''}
       </div>`;
-      toast(`${importedCount} issue(s) imported!`, 'success');
+      toast(`${importedCount} ${typeLabel}(ies) imported!`, 'success');
       clearFile();
       loadDashboard(currentDashboardType);
     } else {
-      result.innerHTML = `<div style="background:rgba(217,79,79,0.1);border:1px solid rgba(217,79,79,0.3);border-radius:8px;padding:14px 18px;color:var(--danger);">❌ No issues imported. ${errors.length ? errors[0] : ''}</div>`;
+      result.innerHTML = `<div style="background:rgba(217,79,79,0.1);border:1px solid rgba(217,79,79,0.3);border-radius:8px;padding:14px 18px;color:var(--danger);">❌ No records imported. ${errors.length ? errors[0] : ''}</div>`;
       toast('Import failed.', 'error');
     }
   } catch (err) {

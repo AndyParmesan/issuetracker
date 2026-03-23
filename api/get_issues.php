@@ -57,8 +57,7 @@ try {
         $params[':particular'] = $particular;
     }
     if (!empty($search)) {
-        $sql .= " AND (i.description LIKE :search OR i.title LIKE :search OR i.dashboard LIKE :search OR i.module LIKE :search OR p.name LIKE :search)";
-        $params[':search'] = "%$search%";
+$sql .= " AND (CAST(i.id AS CHAR) LIKE :search OR i.description LIKE :search OR i.title LIKE :search OR i.dashboard LIKE :search OR i.module LIKE :search OR p.name LIKE :search)";        $params[':search'] = "%$search%";
     }
 
     $sql .= " ORDER BY i.created_at DESC";
