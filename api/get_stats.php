@@ -31,21 +31,30 @@ try {
 
     if ($type === 'stories' || $type === 'user_story') {
         $data = [
-            'total'          => $total,
-            'draftCount'     => $get('Draft'),
-            'forReviewCount' => $get('For Review') + $get('Approved'),
-            'inDevCount'     => $get('In Development'),
-            'testingCount'   => $get('For Testing') + $get('QA Failed') + $get('For UAT') + $get('Ready for Deployment'),
-            'closedCount'    => $get('Deployed') + $get('Closed'),
+            'total'            => $total,
+            'draftCount'       => $get('Draft'),
+            'forReviewCount'   => $get('For Review'),
+            'approvedCount'    => $get('Approved'),
+            'inDevCount'       => $get('In Development'),
+            'testingCount'     => $get('For Testing'),
+            'qaFailedCount'    => $get('QA Failed'),
+            'forUatCount'      => $get('For UAT'),
+            'readyDeployCount' => $get('Ready for Deployment'),
+            'deployedCount'    => $get('Deployed'),
+            'closedCount'      => $get('Closed'),
         ];
     } else {
         $data = [
-            'total'            => $total,
-            'newCount'         => $get('New'),
-            'bugCount'         => $get('Bug'),
-            'openCount'        => $get('Open'),
-            'inProgressCount'  => $get('In Progress'),
-            'closedCount'      => $get('Closed') + $get('Resolved'),
+            'total'              => $total,
+            'newCount'           => $get('New'),
+            'bugCount'           => $get('Bug'),
+            'openCount'          => $get('Open'),
+            'inProgressCount'    => $get('In Progress'),
+            'asDesignedCount'    => $get('As Designed'),
+            'enhancementCount'   => $get('Enhancement'),
+            'needsClarifCount'   => $get('Needs Clarification'),
+            'monitoringCount'    => $get('Monitoring'),
+            'closedCount'        => $get('Closed') + $get('Resolved'),
         ];
     }
 

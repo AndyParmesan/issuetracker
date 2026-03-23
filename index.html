@@ -99,8 +99,8 @@ body.modal-open { overflow: hidden; }
 }
 .topbar-title { font-size: 15px; font-weight: 600; color: var(--text-bright); }
 .topbar-sep { flex: 1; }
-.topbar-search { display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; width: 220px; }
-.topbar-search input { background: transparent; border: none; outline: none; color: var(--text-main); font-family: 'Raleway', sans-serif; font-size: 13px; width: 100%; }
+.topbar-search { display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #ccc; border-radius: 8px; padding: 6px 14px; width: 220px; box-shadow: none; }
+.topbar-search input { background: transparent; border: none !important; outline: none !important; box-shadow: none !important; color: var(--text-main); font-family: 'Raleway', sans-serif; font-size: 13px; width: 100%; }
 .topbar-search input::placeholder { color: var(--text-dim); }
 .topbar-btn { display: flex; align-items: center; gap: 7px; background: var(--accent); color: #fff; font-weight: 700; font-size: 12.5px; border: none; border-radius: 8px; padding: 7px 16px; cursor: pointer; transition: background 0.2s; font-family: 'Raleway', sans-serif; }
 .topbar-btn:hover { background: var(--accent-dim); }
@@ -112,16 +112,88 @@ body.modal-open { overflow: hidden; }
 
 /* ===== STAT CARDS ===== */
 .stat-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
-.stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.2s; }
+.stat-card { background: var(--card-bg); border: 2px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; position: relative; overflow: hidden; transition: all 0.2s; }
 .stat-card:hover { transform: translateY(-2px); }
-.stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; }
-.stat-card.c-total::before { background: var(--sky); }
-.stat-card.c-new::before   { background: var(--info); }
-.stat-card.c-draft::before { background: #888888; }
-.stat-card.c-bug::before   { background: var(--danger); }
-.stat-card.c-open::before  { background: var(--warn); }
-.stat-card.c-prog::before  { background: var(--accent); }
-.stat-card.c-res::before   { background: var(--success); }
+.stat-card::before { display: none; }
+
+/* Card color themes — border + background tint */
+.stat-card.c-total   { border-color: #4a9ece; background: rgba(74,158,206,0.07); }
+.stat-card.c-new     { border-color: #2e9e6b; background: rgba(46,158,107,0.07); }
+.stat-card.c-bug     { border-color: #cc0000; background: rgba(204,0,0,0.07); }
+.stat-card.c-open    { border-color: #e07b20; background: rgba(224,123,32,0.07); }
+.stat-card.c-prog    { border-color: #c88a00; background: rgba(200,138,0,0.07); }
+.stat-card.c-res     { border-color: #2e9e6b; background: rgba(46,158,107,0.07); }
+.stat-card.c-draft   { border-color: #888888; background: rgba(136,136,136,0.07); }
+.stat-card.c-forreview   { border-color: #4a9ece; background: rgba(74,158,206,0.07); }
+.stat-card.c-approved    { border-color: #2e9e6b; background: rgba(46,158,107,0.07); }
+.stat-card.c-indev       { border-color: #4a64ce; background: rgba(74,100,206,0.07); }
+.stat-card.c-fortesting  { border-color: #e07b20; background: rgba(224,123,32,0.07); }
+.stat-card.c-qafailed    { border-color: #d94f4f; background: rgba(217,79,79,0.07); }
+.stat-card.c-foruat      { border-color: #a050ce; background: rgba(160,80,206,0.07); }
+.stat-card.c-readydeploy { border-color: #20b48c; background: rgba(32,180,140,0.07); }
+.stat-card.c-deployed    { border-color: #2e9e6b; background: rgba(46,158,107,0.07); }
+.stat-card.c-asdesigned  { border-color: #4a9ece; background: rgba(74,158,206,0.07); }
+.stat-card.c-enhancement { border-color: #a050ce; background: rgba(160,80,206,0.07); }
+.stat-card.c-needsclarif { border-color: #20b48c; background: rgba(32,180,140,0.07); }
+.stat-card.c-monitoring  { border-color: #e07b20; background: rgba(224,123,32,0.07); }
+
+/* Card icon + label row */
+.stat-card-top { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; }
+.stat-card-icon { width: 18px; height: 18px; flex-shrink: 0; }
+.stat-card-icon svg { width: 18px; height: 18px; }
+.stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-family: 'Roboto Mono', monospace; margin-bottom: 0; }
+
+/* Label color per type */
+.c-total   .stat-label { color: #4a9ece; }
+.c-new     .stat-label { color: #2e9e6b; }
+.c-bug     .stat-label { color: #cc0000; }
+.c-open    .stat-label { color: #e07b20; }
+.c-prog    .stat-label { color: #c88a00; }
+.c-res     .stat-label { color: #2e9e6b; }
+.c-draft   .stat-label { color: #888888; }
+.c-forreview   .stat-label { color: #4a9ece; }
+.c-approved    .stat-label { color: #2e9e6b; }
+.c-indev       .stat-label { color: #4a64ce; }
+.c-fortesting  .stat-label { color: #e07b20; }
+.c-qafailed    .stat-label { color: #d94f4f; }
+.c-foruat      .stat-label { color: #a050ce; }
+.c-readydeploy .stat-label { color: #20b48c; }
+.c-deployed    .stat-label { color: #2e9e6b; }
+.c-asdesigned  .stat-label { color: #4a9ece; }
+.c-enhancement .stat-label { color: #a050ce; }
+.c-needsclarif .stat-label { color: #20b48c; }
+.c-monitoring  .stat-label { color: #e07b20; }
+
+.stat-value { font-size: 30px; font-weight: 700; color: var(--text-bright); line-height: 1; }
+.stat-icon  { display: none; }
+
+/* ===== STAT CAROUSEL ===== */
+.stat-carousel-wrap { position: relative; width: 100%; }
+.stat-carousel {
+  display: flex; gap: 14px;
+  overflow-x: auto; overflow-y: hidden;
+  padding: 4px 4px 12px 4px;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #cc0000 #f0f0f0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card-bg);
+}
+.stat-carousel::-webkit-scrollbar { height: 6px; }
+.stat-carousel::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 99px; margin: 0 4px; }
+.stat-carousel::-webkit-scrollbar-thumb { background: #cc0000; border-radius: 99px; }
+.stat-carousel::-webkit-scrollbar-thumb:hover { background: #aa0000; }
+.stat-carousel .stat-card { min-width: calc(20% - 12px); flex-shrink: 0; cursor: pointer; }
+.stat-carousel .stat-card:hover { transform: translateY(-2px); border-color: rgba(204,0,0,0.3); }
+.stat-carousel .stat-card.active-filter { border-color: #cc0000; box-shadow: 0 0 0 2px rgba(204,0,0,0.2); }
+.stat-carousel .stat-label { font-weight: 700; }
+.carousel-btn { display: none; }
+
+/* Filtered view back button */
+.filtered-view-header { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.back-to-dashboard { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #ccc; border-radius: 7px; padding: 6px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: #333; font-family: 'Raleway', sans-serif; transition: all 0.2s; }
+.back-to-dashboard:hover { background: #f5f5f5; border-color: #cc0000; color: #cc0000; }
 .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); font-family: 'Roboto Mono', monospace; margin-bottom: 6px; }
 .stat-value { font-size: 30px; font-weight: 700; color: var(--text-bright); line-height: 1; }
 .stat-icon  { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 18px; opacity: 0.12; }
@@ -252,15 +324,15 @@ select.form-control option { background: #ffffff; color: #333333; }
 .detail-meta .pri-badge { font-size: 12px; padding: 5px 14px; }
 .detail-meta .sp-badge  { font-size: 12px; width: 42px; height: 42px; }
 .meta-row { display: flex; align-items: flex-start; gap: 10px; }
-.meta-key { font-size: 18px; font-weight: 700; letter-spacing: 0.08em; color: #1a1a1a; text-transform: uppercase; font-family: 'Roboto Mono', monospace; min-width: 110px; padding-top: 3px; }
-.meta-val { color: #1a1a1a; font-size: 18px; font-weight: 500; }
+.meta-key { font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #1a1a1a; text-transform: uppercase; font-family: 'Roboto Mono', monospace; min-width: 110px; padding-top: 3px; }
+.meta-val { color: #1a1a1a; font-size: 14px; font-weight: 500; }
 
 /* ===== COMMENTS ===== */
 .comments-section { display: flex; flex-direction: column; gap: 10px; }
 .comment-item { background: #f8f8f8; border: 1px solid #eee; border-radius: 8px; padding: 10px 14px; }
-.comment-author { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
-.comment-time   { font-size: 12px; color: var(--text-dim); font-family: 'Roboto Mono', monospace; margin-left: auto; }
-.comment-text   { font-size: 12px; color: var(--text-main); }
+.comment-author { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
+.comment-time   { font-size: 14px; color: var(--text-dim); font-family: 'Roboto Mono', monospace; margin-left: auto; }
+.comment-text   { font-size: 14px; color: var(--text-main); }
 .comment-input-row { display: flex; gap: 8px; margin-top: 6px; }
 .comment-input-row textarea { flex: 1; min-height: 50px; resize: none; }
 
@@ -285,7 +357,7 @@ select.form-control option { background: #ffffff; color: #333333; }
 
 /* ===== ATTACHMENTS ===== */
 .attachments-section { margin-top: 16px; border-top: 1px solid #eee; padding-top: 14px; }
-.attachments-header  { font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #1a1a1a; font-family: 'Roboto Mono', monospace; margin-bottom: 10px; }
+.attachments-header  { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #1a1a1a; font-family: 'Roboto Mono', monospace; margin-bottom: 10px; }
 .attachment-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
 .attachment-item { display: flex; align-items: center; gap: 10px; background: #f8f8f8; border: 1px solid #eee; border-radius: 8px; padding: 8px 12px; font-size: 18px; }
 .attachment-icon { font-size: 18px; flex-shrink: 0; }
@@ -304,8 +376,8 @@ select.form-control option { background: #ffffff; color: #333333; }
 .btn-upload:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ===== ACCEPTANCE CRITERIA ===== */
-.ac-box { background: #f8fff8; border: 1px solid rgba(46,158,107,0.2); border-radius: 8px; padding: 12px 14px; font-size: 18px; color: #333; white-space: pre-wrap; line-height: 1.6; }
-.ac-empty { color: #aaa; font-style: italic; font-size: 18px; }
+.ac-box { background: #f8fff8; border: 1px solid rgba(46,158,107,0.2); border-radius: 8px; padding: 12px 14px; font-size: 14px; color: #333; white-space: pre-wrap; line-height: 1.6; }
+.ac-empty { color: #aaa; font-style: italic; font-size: 14px; }
 
 /* ===== TOAST ===== */
 #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
@@ -384,10 +456,13 @@ select.form-control option { background: #ffffff; color: #333333; }
     <div class="topbar-title" id="topbar-title">Dashboard</div>
     <div class="topbar-sep"></div>
     <div class="topbar-search" id="topbar-search" style="display:none;">
-      <span></span>
       <input type="text" id="global-search" placeholder="Search ID or description…" />
     </div>
     <button class="topbar-btn" id="topbar-new-btn" onclick="navigate('new-issue')" style="display:none;">➕ New Item</button>
+    <div id="topbar-user" style="display:flex;align-items:center;gap:7px;background:rgba(204,0,0,0.07);border:1px solid rgba(204,0,0,0.15);border-radius:20px;padding:5px 13px 5px 9px;font-size:12.5px;font-weight:600;color:#cc0000;font-family:'Raleway',sans-serif;white-space:nowrap;">
+      <span style="font-size:16px;">👤</span>
+      <span id="topbar-username">—</span>
+    </div>
   </div>
 
   <div id="content">
@@ -395,13 +470,19 @@ select.form-control option { background: #ffffff; color: #333333; }
     <!-- ===== DASHBOARD ===== -->
     <!-- ===== DASHBOARD: ITEMS ===== -->
     <div class="view active" id="view-dashboard-items">
-      <div class="stat-row">
-        <div class="stat-card c-total"><div class="stat-label">Total Items</div><div class="stat-value" id="si-total">–</div></div>
-        <div class="stat-card c-new"><div class="stat-label">New</div><div class="stat-value" id="si-new">–</div></div>
-        <div class="stat-card c-bug"><div class="stat-label">Bugs</div><div class="stat-value" id="si-bug">–</div></div>
-        <div class="stat-card c-open"><div class="stat-label">Open</div><div class="stat-value" id="si-open">–</div></div>
-        <div class="stat-card c-prog"><div class="stat-label">In Progress</div><div class="stat-value" id="si-prog">–</div></div>
-        <div class="stat-card c-res"><div class="stat-label">Closed</div><div class="stat-value" id="si-closed">–</div></div>
+      <div class="stat-carousel-wrap" id="items-carousel-wrap">
+        <div class="stat-carousel" id="items-carousel">
+          <div class="stat-card c-total" onclick="filterFromDashboard('items','')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#4a9ece" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span><div class="stat-label">Total Items</div></div><div class="stat-value" id="si-total">–</div></div>
+          <div class="stat-card c-new" onclick="filterFromDashboard('items','New')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2e9e6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span><div class="stat-label">New</div></div><div class="stat-value" id="si-new">–</div></div>
+          <div class="stat-card c-bug" onclick="filterFromDashboard('items','Bug')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#cc0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.5 1.5"/><path d="M14.5 3.5L16 2"/><path d="M9 7H5l-2 3h4"/><path d="M15 7h4l2 3h-4"/><path d="M12 8a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0v-4a4 4 0 0 1 4-4z"/><line x1="8" y1="13" x2="5" y2="13"/><line x1="19" y1="13" x2="16" y2="13"/><line x1="9" y1="20" x2="7" y2="22"/><line x1="15" y1="20" x2="17" y2="22"/></svg></span><div class="stat-label">Bugs</div></div><div class="stat-value" id="si-bug">–</div></div>
+          <div class="stat-card c-open" onclick="filterFromDashboard('items','Open')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e07b20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg></span><div class="stat-label">Open</div></div><div class="stat-value" id="si-open">–</div></div>
+          <div class="stat-card c-prog" onclick="filterFromDashboard('items','In Progress')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c88a00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><div class="stat-label">In Progress</div></div><div class="stat-value" id="si-prog">–</div></div>
+          <div class="stat-card c-asdesigned" onclick="filterFromDashboard('items','As Designed')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#4a9ece" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div class="stat-label">As Designed</div></div><div class="stat-value" id="si-asdesigned">–</div></div>
+          <div class="stat-card c-enhancement" onclick="filterFromDashboard('items','Enhancement')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#a050ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span><div class="stat-label">Enhancement</div></div><div class="stat-value" id="si-enhancement">–</div></div>
+          <div class="stat-card c-needsclarif" onclick="filterFromDashboard('items','Needs Clarification')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#20b48c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><div class="stat-label">Needs Clarification</div></div><div class="stat-value" id="si-needsclarif">–</div></div>
+          <div class="stat-card c-monitoring" onclick="filterFromDashboard('items','Monitoring')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e07b20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span><div class="stat-label">Monitoring</div></div><div class="stat-value" id="si-monitoring">–</div></div>
+          <div class="stat-card c-res" onclick="filterFromDashboard('items','Closed')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2e9e6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><div class="stat-label">Closed</div></div><div class="stat-value" id="si-closed">–</div></div>
+        </div>
       </div>
       <div class="charts-row" style="grid-template-columns:1fr;">
         <div class="card">
@@ -428,13 +509,20 @@ select.form-control option { background: #ffffff; color: #333333; }
 
     <!-- ===== DASHBOARD: USER STORIES ===== -->
     <div class="view" id="view-dashboard-stories">
-      <div class="stat-row">
-        <div class="stat-card c-total"><div class="stat-label">Total Stories</div><div class="stat-value" id="ss-total">–</div></div>
-        <div class="stat-card c-draft"><div class="stat-label">Draft</div><div class="stat-value" id="ss-draft">–</div></div>
-        <div class="stat-card c-forreview"><div class="stat-label" style="font-size:9px;">For Review</div><div class="stat-value" id="ss-review">–</div></div>
-        <div class="stat-card c-prog"><div class="stat-label">In Development</div><div class="stat-value" id="ss-indev">–</div></div>
-        <div class="stat-card c-fortesting"><div class="stat-label">For Testing</div><div class="stat-value" id="ss-testing">–</div></div>
-        <div class="stat-card c-res"><div class="stat-label">Closed</div><div class="stat-value" id="ss-closed">–</div></div>
+      <div class="stat-carousel-wrap" id="stories-carousel-wrap">
+        <div class="stat-carousel" id="stories-carousel">
+          <div class="stat-card c-total" onclick="filterFromDashboard('stories','')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#4a9ece" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span><div class="stat-label">Total Stories</div></div><div class="stat-value" id="ss-total">–</div></div>
+          <div class="stat-card c-draft" onclick="filterFromDashboard('stories','Draft')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span><div class="stat-label">Draft</div></div><div class="stat-value" id="ss-draft">–</div></div>
+          <div class="stat-card c-forreview" onclick="filterFromDashboard('stories','For Review')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#4a9ece" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><div class="stat-label">For Review</div></div><div class="stat-value" id="ss-review">–</div></div>
+          <div class="stat-card c-approved" onclick="filterFromDashboard('stories','Approved')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2e9e6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span><div class="stat-label">Approved</div></div><div class="stat-value" id="ss-approved">–</div></div>
+          <div class="stat-card c-indev" onclick="filterFromDashboard('stories','In Development')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#4a64ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><div class="stat-label">In Development</div></div><div class="stat-value" id="ss-indev">–</div></div>
+          <div class="stat-card c-fortesting" onclick="filterFromDashboard('stories','For Testing')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e07b20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v11m0 0H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-4m-6 0h6"/></svg></span><div class="stat-label">For Testing</div></div><div class="stat-value" id="ss-testing">–</div></div>
+          <div class="stat-card c-qafailed" onclick="filterFromDashboard('stories','QA Failed')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d94f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></span><div class="stat-label">QA Failed</div></div><div class="stat-value" id="ss-qafailed">–</div></div>
+          <div class="stat-card c-foruat" onclick="filterFromDashboard('stories','For UAT')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#a050ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><div class="stat-label">For UAT</div></div><div class="stat-value" id="ss-foruat">–</div></div>
+          <div class="stat-card c-readydeploy" onclick="filterFromDashboard('stories','Ready for Deployment')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#20b48c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span><div class="stat-label">Ready for Deploy</div></div><div class="stat-value" id="ss-readydeploy">–</div></div>
+          <div class="stat-card c-deployed" onclick="filterFromDashboard('stories','Deployed')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2e9e6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><div class="stat-label">Deployed</div></div><div class="stat-value" id="ss-deployed">–</div></div>
+          <div class="stat-card c-res" onclick="filterFromDashboard('stories','Closed')"><div class="stat-card-top"><span class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2e9e6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><div class="stat-label">Closed</div></div><div class="stat-value" id="ss-closed">–</div></div>
+        </div>
       </div>
       <div class="charts-row" style="grid-template-columns:1fr;">
         <div class="card">
@@ -1291,12 +1379,47 @@ if (!localStorage.getItem('loggedIn')) {
     window.location.href = 'login.html';
 }
 
+// Show logged-in username in topbar
+(function() {
+  const name = localStorage.getItem('userName') || localStorage.getItem('username') || '—';
+  const el = document.getElementById('topbar-username');
+  if (el) el.textContent = name;
+})();
+
 function logout() {
     localStorage.removeItem('loggedIn');
     localStorage.removeItem('username');
+    localStorage.removeItem('userName');
     localStorage.removeItem('role');
+    localStorage.removeItem('userId');
     window.location.href = 'login.html';
 }
+
+// ============================================================
+// SESSION TIMEOUT — auto logout after 60 min of inactivity
+// ============================================================
+(function() {
+  const TIMEOUT_MS = 60 * 60 * 1000;
+  const WARN_MS    = 55 * 60 * 1000;
+  let timeoutTimer, warnTimer;
+
+  function resetTimers() {
+    clearTimeout(timeoutTimer);
+    clearTimeout(warnTimer);
+    warnTimer = setTimeout(() => {
+      toast('You will be logged out in 5 minutes due to inactivity.', 'info');
+    }, WARN_MS);
+    timeoutTimer = setTimeout(() => {
+      logout();
+    }, TIMEOUT_MS);
+  }
+
+  ['mousemove','keydown','click','scroll','touchstart'].forEach(evt => {
+    document.addEventListener(evt, resetTimers, { passive: true });
+  });
+
+  resetTimers();
+})()
 
 // ============================================================
 // CONFIG
@@ -1380,9 +1503,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const navImport = document.getElementById('nav-import');
   if (navImport) navImport.style.display = (role === 'admin') ? '' : 'none';
 
-  // Reports: admin and developer only (not reporters)
+  // Reports: visible to all roles
   const navReports = document.getElementById('nav-reports');
-  if (navReports) navReports.style.display = (role === 'reporter') ? 'none' : '';
+  if (navReports) navReports.style.display = '';
 
   // Hide Management section label if developer has nothing under it
   if (role === 'developer') {
@@ -1439,7 +1562,21 @@ function navigate(view) {
   }
   const newBtn = document.getElementById('topbar-new-btn');
   if (newBtn) newBtn.style.display = (view === 'issues') ? '' : 'none';
-  if (view === 'issues')      loadIssues();
+  if (view === 'issues') {
+    // Reset all filters and search when clicking All Items nav
+    const filterParticular = document.getElementById('filter-particular');
+    const filterState      = document.getElementById('filter-state');
+    const filterPriority   = document.getElementById('filter-priority');
+    const filterMine       = document.getElementById('filter-mine-btn');
+    const globalSearch     = document.getElementById('global-search');
+    if (filterParticular) filterParticular.value = '';
+    if (filterState)      filterState.value      = '';
+    if (filterPriority)   filterPriority.value   = '';
+    if (filterMine)       filterMine.value       = 'all';
+    if (globalSearch)     globalSearch.value     = '';
+    _filterMine = 'all';
+    loadIssues();
+  }
   if (view === 'reports')     loadReportHistory();
   if (view === 'new-issue')   setTodayDate();
   if (view === 'user-story')  setUserStoryDate();
@@ -1543,19 +1680,19 @@ function setupIssuedBy() {
   const role     = localStorage.getItem('role');
   const userId   = localStorage.getItem('userId');
   const userName = localStorage.getItem('userName');
-  const reporters = allUsers.filter(u => u.role === 'reporter' && u.isActive !== 0 && u.isActive !== '0');
+  const activeUsers = allUsers.filter(u => u.isActive !== 0 && u.isActive !== '0');
 
   ['ni', 'us'].forEach(prefix => {
     const wrapper = document.getElementById(prefix + '-issued-by-wrapper');
     if (!wrapper) return;
 
     if (role === 'admin') {
-      // Admin gets a full dropdown of all reporters
+      // Admin gets a dropdown of ALL active users
       const sel = document.createElement('select');
       sel.className = 'form-control';
       sel.id = prefix + '-issued-by';
       sel.innerHTML = '<option value="">— Select —</option>';
-      reporters.forEach(u => {
+      activeUsers.forEach(u => {
         const opt = document.createElement('option');
         opt.value = u.id;
         opt.textContent = u.name;
@@ -1659,27 +1796,106 @@ async function loadDashboard(type) {
     const d = res.data;
     if (!d) return;
     if (type === 'items') {
-      document.getElementById('si-total').textContent  = d.total  || 0;
-      document.getElementById('si-new').textContent    = d.newCount   || 0;
-      document.getElementById('si-bug').textContent    = d.bugCount   || 0;
-      document.getElementById('si-open').textContent   = d.openCount  || 0;
-      document.getElementById('si-prog').textContent   = d.inProgressCount || 0;
-      document.getElementById('si-closed').textContent = d.closedCount || 0;
+      document.getElementById('si-total').textContent       = d.total              || 0;
+      document.getElementById('si-new').textContent         = d.newCount           || 0;
+      document.getElementById('si-bug').textContent         = d.bugCount           || 0;
+      document.getElementById('si-open').textContent        = d.openCount          || 0;
+      document.getElementById('si-prog').textContent        = d.inProgressCount    || 0;
+      document.getElementById('si-asdesigned').textContent  = d.asDesignedCount    || 0;
+      document.getElementById('si-enhancement').textContent = d.enhancementCount   || 0;
+      document.getElementById('si-needsclarif').textContent = d.needsClarifCount   || 0;
+      document.getElementById('si-monitoring').textContent  = d.monitoringCount    || 0;
+      document.getElementById('si-closed').textContent      = d.closedCount        || 0;
       document.getElementById('badge-open').textContent = d.total || 0;
       renderDashboardChart('chart-items-priority', d.byPriority, 'Items by Priority');
       loadRecentItems();
     } else {
-      document.getElementById('ss-total').textContent   = d.total   || 0;
-      document.getElementById('ss-draft').textContent   = d.draftCount   || 0;
-      document.getElementById('ss-review').textContent  = d.forReviewCount || 0;
-      document.getElementById('ss-indev').textContent   = d.inDevCount  || 0;
-      document.getElementById('ss-testing').textContent = d.testingCount || 0;
-      document.getElementById('ss-closed').textContent  = d.closedCount || 0;
+      document.getElementById('ss-total').textContent      = d.total            || 0;
+      document.getElementById('ss-draft').textContent      = d.draftCount       || 0;
+      document.getElementById('ss-review').textContent     = d.forReviewCount   || 0;
+      document.getElementById('ss-approved').textContent   = d.approvedCount    || 0;
+      document.getElementById('ss-indev').textContent      = d.inDevCount       || 0;
+      document.getElementById('ss-testing').textContent    = d.testingCount     || 0;
+      document.getElementById('ss-qafailed').textContent   = d.qaFailedCount    || 0;
+      document.getElementById('ss-foruat').textContent     = d.forUatCount      || 0;
+      document.getElementById('ss-readydeploy').textContent= d.readyDeployCount || 0;
+      document.getElementById('ss-deployed').textContent   = d.deployedCount    || 0;
+      document.getElementById('ss-closed').textContent     = d.closedCount      || 0;
       document.getElementById('badge-open').textContent = d.total || 0;
       renderDashboardChart('chart-stories-priority', d.byPriority, 'Stories by Priority');
       loadRecentStories();
     }
   } catch { }
+}
+
+// Carousel scroll
+function scrollCarousel(type, dir) {
+  const carousel = document.getElementById(type + '-carousel');
+  if (!carousel) return;
+  carousel.scrollLeft += dir * 330;
+  setTimeout(() => updateCarouselBtns(type), 300);
+}
+
+function updateCarouselBtns(type) {
+  const carousel = document.getElementById(type + '-carousel');
+  const leftBtn  = document.getElementById(type + '-carousel-left');
+  const rightBtn = document.getElementById(type + '-carousel-right');
+  if (!carousel) return;
+  leftBtn.disabled  = carousel.scrollLeft <= 0;
+  rightBtn.disabled = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 2;
+}
+
+// Hook up scroll listener for carousel button states
+['items','stories'].forEach(type => {
+  document.addEventListener('DOMContentLoaded', () => {
+    const c = document.getElementById(type + '-carousel');
+    if (c) c.addEventListener('scroll', () => updateCarouselBtns(type));
+  });
+});
+
+// Filter from dashboard stat card click
+function filterFromDashboard(type, state) {
+  // Highlight the clicked card
+  const carouselId = type === 'items' ? 'items-carousel' : 'stories-carousel';
+  document.querySelectorAll('#' + carouselId + ' .stat-card').forEach(c => c.classList.remove('active-filter'));
+  if (state) event.currentTarget?.classList.add('active-filter');
+
+  // Navigate to All Items with filter pre-applied
+  navigate('issues');
+  setTimeout(() => {
+    const stateFilter = document.getElementById('filter-state');
+    const mineFilter  = document.getElementById('filter-mine-btn');
+    if (stateFilter) stateFilter.value = state;
+    if (mineFilter && type === 'stories') mineFilter.value = 'story';
+    else if (mineFilter) mineFilter.value = 'all';
+    loadIssues();
+    // Show back button
+    showBackToDashboard(type);
+  }, 100);
+}
+
+function showBackToDashboard(type) {
+  // Remove existing back btn if any
+  const existing = document.getElementById('back-dash-btn');
+  if (existing) existing.remove();
+
+  const issuesCard = document.querySelector('#view-issues .card-header');
+  if (!issuesCard) return;
+
+  const btn = document.createElement('button');
+  btn.id = 'back-dash-btn';
+  btn.className = 'back-to-dashboard';
+  btn.innerHTML = '← Back to Dashboard';
+  btn.onclick = () => {
+    btn.remove();
+    navigate('dashboard');
+    // Reset filters
+    const stateFilter = document.getElementById('filter-state');
+    const mineFilter  = document.getElementById('filter-mine-btn');
+    if (stateFilter) stateFilter.value = '';
+    if (mineFilter)  mineFilter.value  = 'all';
+  };
+  issuesCard.insertBefore(btn, issuesCard.firstChild);
 }
 
 function renderDashboardChart(canvasId, data, title) {
@@ -1929,9 +2145,10 @@ async function viewIssue(id) {
             <span style="font-family:'Roboto Mono',monospace;font-size:15px;font-weight:700;color:#cc0000;">#${issue.id}</span>
             <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(74,100,206,0.12);color:#4a64ce;font-family:'Roboto Mono',monospace;letter-spacing:.06em;">STORY</span>
           </div>
-          <h2 style="font-size:25px;font-weight:700;color:#1a1a1a;margin-bottom:4px;line-height:1.4;">${escHtml(issue.title || '—')}</h2>
+          <div style="font-size:10px;font-weight:400;text-transform:uppercase;letter-spacing:0.1em;color:#aaa;font-family:'Roboto Mono',monospace;margin-bottom:4px;">Title</div>
+          <h2 style="font-size:21px;font-weight:700;color:#1a1a1a;margin-bottom:4px;line-height:1.4;">${escHtml(issue.title || '—')}</h2>
           <div style="margin-bottom:14px;">
-            <div class="meta-key" style="margin-bottom:6px;">Description</div>
+            <div style="font-size:10px;font-weight:400;text-transform:uppercase;letter-spacing:0.1em;color:#aaa;font-family:'Roboto Mono',monospace;margin-bottom:6px;">Description</div>
             <div style="font-size:12px;color:#1a1a1a;background:#f8f8f8;border:1px solid #eee;border-radius:8px;padding:12px 16px;line-height:1.6;white-space:pre-wrap;word-break:break-word;">${escHtml(issue.description || '—')}</div>
           </div>
           <div class="detail-meta">
@@ -1946,7 +2163,7 @@ async function viewIssue(id) {
             <div class="meta-row"><span class="meta-key">Date</span><span class="meta-val">${fmtDate(issue.dateIdentified||issue.date_identified)}</span></div>
           </div>
           <div style="margin-top:14px;">
-            <div style="font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#1a1a1a;font-family:'Roboto Mono',monospace;margin-bottom:6px;">✅ Acceptance Criteria</div>
+            <div style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#1a1a1a;font-family:'Roboto Mono',monospace;margin-bottom:6px;">✅ Acceptance Criteria</div>
             ${issue.acceptanceCriteria
               ? `<div class="ac-box">${escHtml(issue.acceptanceCriteria)}</div>`
               : `<div class="ac-empty">No acceptance criteria defined.</div>`}
@@ -1959,7 +2176,7 @@ async function viewIssue(id) {
             ${issue.title ? `<span style="font-size:14px;font-weight:700;color:#1a1a1a;">${escHtml(issue.title)}</span>` : ''}
           </div>
           <div style="margin-bottom:14px;">
-            <div class="meta-key" style="margin-bottom:6px;">Description</div>
+            <div style="font-size:10px;font-weight:400;text-transform:uppercase;letter-spacing:0.1em;color:#aaa;font-family:'Roboto Mono',monospace;margin-bottom:6px;">Description</div>
             <div style="font-size:12px;color:#1a1a1a;background:#f8f8f8;border:1px solid #eee;border-radius:8px;padding:12px 16px;line-height:1.6;white-space:pre-wrap;word-break:break-word;">${escHtml(issue.description || '—')}</div>
           </div>
           <div class="detail-meta">
@@ -1976,7 +2193,7 @@ async function viewIssue(id) {
           `}
         </div>
         <div>
-          <div style="font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1a1a1a;font-family:'Roboto Mono',monospace;margin-bottom:10px;">
+          <div style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1a1a1a;font-family:'Roboto Mono',monospace;margin-bottom:10px;">
             💬 Discussion (${comments.length})
           </div>
           <div class="comments-section" id="comments-list">
